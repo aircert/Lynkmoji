@@ -4,7 +4,9 @@ use_frameworks!
 
 target 'ARKit+CoreLocation' do
     pod 'ARCL', :path => '.'
-
+    pod ‘GeoFire’, :git => ‘https://github.com/firebase/geofire-objc.git'
+    pod 'Firebase/Core'
+    pod 'Firebase/Auth'
     target 'ARCLTests' do
 
     end

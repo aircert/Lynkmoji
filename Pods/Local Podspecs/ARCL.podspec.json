@@ -18,16 +18,15 @@
   "platforms": {
     "ios": "9.0"
   },
-  "swift_versions": "5.0",
+  "swift_version": "5.0",
   "requires_arc": true,
   "source_files": "Sources/**/*.{swift}",
   "frameworks": [
     "Foundation",
     "UIKit",
-    "ARKit",
     "CoreLocation",
     "MapKit",
     "SceneKit"
   ],
-  "swift_version": "5.0"
+  "weak_frameworks": "ARKit"
 }

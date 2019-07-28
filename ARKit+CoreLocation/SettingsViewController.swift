@@ -9,6 +9,8 @@
 import CoreLocation
 import MapKit
 import UIKit
+import GeoFire
+import Firebase
 
 @available(iOS 11.0, *)
 class SettingsViewController: UIViewController {
@@ -24,6 +26,10 @@ class SettingsViewController: UIViewController {
 
     var mapSearchResults: [MKMapItem]?
 
+    var geoFireRef: DatabaseReference?
+    var geoFire: GeoFire?
+    var myQuery: GFQuery?
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -38,6 +44,9 @@ class SettingsViewController: UIViewController {
         locationManager.requestWhenInUseAuthorization()
 
         addressText.delegate = self
+        
+        geoFireRef = Database.database().reference().child("users")
+        geoFire = GeoFire(firebaseRef: geoFireRef!)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -61,7 +70,7 @@ class SettingsViewController: UIViewController {
         guard let text = addressText.text, !text.isEmpty else {
             return
         }
-        searchForLocation()
+        searchForUsers()
     }
 }
 
@@ -74,7 +83,7 @@ extension SettingsViewController: UITextFieldDelegate {
 
         if string == "\n" {
             DispatchQueue.main.async { [weak self] in
-                self?.searchForLocation()
+                self?.searchForUsers()
             }
         }
 
@@ -196,6 +205,43 @@ extension SettingsViewController {
                 arclVC.routes = response.routes
                 self.navigationController?.pushViewController(arclVC, animated: true)
             }
+        })
+    }
+    
+    func searchForUsers() {
+        guard let addressText = addressText.text, !addressText.isEmpty else {
+            return
+        }
+        
+        showRouteDirections.isOn = true
+        toggledSwitch(showRouteDirections)
+        
+//        refreshControl.startAnimating()
+        defer {
+            self.addressText.resignFirstResponder()
+        }
+        
+        myQuery = geoFire?.query(at: CLLocation(coordinate: self.locationManager.location!.coordinate, altitude: 0.5), withRadius: 1000)
+        
+        print("building")
+        print(self.locationManager.location!.coordinate)
+        
+        myQuery?.observe(.keyEntered, with: { (key, location) in
+            print("in query")
+            Database.database().reference().child("users").child(key).observe(.value, with: { (snapshot) in
+                let userDict = snapshot.value as? [String : AnyObject] ?? [:]
+                //                if (userDict["active"]! as! String != "false") {
+                let snap_info = userDict["snap_info"] as! [String : AnyObject]
+                
+                print(snap_info)
+                
+                let destination = UserMKMapItem(coordinate: location.coordinate, profileFileURL: snap_info["bitmoji_url"] as! String, title: snap_info["display_name"] as! String)
+                destination.name = "test"
+                self.mapSearchResults?.append(destination)
+                self.searchResultTable.reloadData()
+                print("here")
+            })
+            //            self.resetARScene()
         })
     }
 

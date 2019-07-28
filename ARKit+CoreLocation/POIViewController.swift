@@ -29,7 +29,7 @@ class POIViewController: UIViewController {
 
     var centerMapOnUserLocation: Bool = true
     var routes: [MKRoute]?
-
+    
     var showMap = false {
         didSet {
             guard let mapView = mapView else {

@@ -7,6 +7,7 @@ target 'ARKit+CoreLocation' do
     pod ‘GeoFire’, :git => ‘https://github.com/firebase/geofire-objc.git'
     pod 'Firebase/Core'
     pod 'Firebase/Auth'
+    pod 'Firebase/Firestore'
     target 'ARCLTests' do
 
     end

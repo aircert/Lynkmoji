@@ -19,12 +19,13 @@ class LocationCell: UITableViewCell {
         return locationManager?.location
     }
 
-    var mapItem: MKMapItem? {
+    var mapItem: UserMKMapItem? {
         didSet {
             updateCell()
         }
     }
 
+    @IBOutlet weak var profileImageView: UIImageView!
     @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
 
@@ -61,6 +62,8 @@ extension LocationCell {
         distanceLabel.text = String(format: "%.0f km", mapItemLocation.distance(from: currentLocation)/1000)
 
         locationUpdateTimer = Timer(timeInterval: 1, target: self, selector: #selector(updateCell), userInfo: nil, repeats: false)
+        
+        profileImageView.image = mapItem.profileImage
     }
 
 }

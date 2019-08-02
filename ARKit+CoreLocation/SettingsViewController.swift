@@ -16,15 +16,13 @@ import Firebase
 class SettingsViewController: UIViewController {
 
     @IBOutlet weak var showMapSwitch: UISwitch!
-    @IBOutlet weak var showPointsOfInterest: UISwitch!
     @IBOutlet weak var showRouteDirections: UISwitch!
-    @IBOutlet weak var addressText: UITextField!
     @IBOutlet weak var searchResultTable: UITableView!
     @IBOutlet weak var refreshControl: UIActivityIndicatorView!
 
     var locationManager = CLLocationManager()
 
-    var mapSearchResults: [MKMapItem]?
+    var mapSearchResults: [UserMKMapItem]? = []
 
     var geoFireRef: DatabaseReference?
     var geoFire: GeoFire?
@@ -42,11 +40,20 @@ class SettingsViewController: UIViewController {
         locationManager.startUpdatingLocation()
 
         locationManager.requestWhenInUseAuthorization()
-
-        addressText.delegate = self
         
         geoFireRef = Database.database().reference().child("users")
         geoFire = GeoFire(firebaseRef: geoFireRef!)
+        
+        self.searchResultTable.delegate = self
+        self.searchResultTable.dataSource = self
+        
+        searchResultTable.register(UINib(nibName: "LocationCell", bundle: nil), forCellReuseIdentifier: "LocationCell")
+        
+        searchResultTable.rowHeight = UITableView.automaticDimension
+        searchResultTable.estimatedRowHeight = 120
+        
+        searchForUsers()
+        
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -56,21 +63,9 @@ class SettingsViewController: UIViewController {
 
     @IBAction
     func toggledSwitch(_ sender: UISwitch) {
-        if sender == showPointsOfInterest {
-            showRouteDirections.isOn = !sender.isOn
-            searchResultTable.reloadData()
-        } else if sender == showRouteDirections {
-            showPointsOfInterest.isOn = !sender.isOn
+       if sender == showRouteDirections {
             searchResultTable.reloadData()
         }
-    }
-
-    @IBAction
-    func tappedSearch(_ sender: Any) {
-        guard let text = addressText.text, !text.isEmpty else {
-            return
-        }
-        searchForUsers()
     }
 }
 
@@ -102,37 +97,21 @@ extension SettingsViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if showPointsOfInterest.isOn {
-            return 1
-        }
-        guard let mapSearchResults = mapSearchResults else {
-            return 0
-        }
-
-        return mapSearchResults.count
+        return mapSearchResults?.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if showPointsOfInterest.isOn {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "OpenARCell", for: indexPath)
-            guard let openARCell = cell as? OpenARCell else {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "LocationCell", for: indexPath)
+        guard let mapSearchResults = mapSearchResults,
+            indexPath.row < mapSearchResults.count,
+            let locationCell = cell as? LocationCell else {
                 return cell
-            }
-            openARCell.parentVC = self
-
-            return openARCell
-        } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "LocationCell", for: indexPath)
-            guard let mapSearchResults = mapSearchResults,
-                indexPath.row < mapSearchResults.count,
-                let locationCell = cell as? LocationCell else {
-                return cell
-            }
-            locationCell.locationManager = locationManager
-            locationCell.mapItem = mapSearchResults[indexPath.row]
-
-            return locationCell
         }
+        locationCell.locationManager = locationManager
+        locationCell.mapItem = mapSearchResults[indexPath.row]
+        
+        print("going here")
+        return locationCell
     }
 }
 
@@ -168,12 +147,12 @@ extension SettingsViewController {
 
     func createARVC() -> POIViewController {
         let arclVC = POIViewController.loadFromStoryboard()
-        arclVC.showMap = showMapSwitch.isOn
+        arclVC.showMap = true
 
         return arclVC
     }
 
-    func getDirections(to mapLocation: MKMapItem) {
+    func getDirections(to mapLocation: UserMKMapItem) {
         refreshControl.startAnimating()
 
         let request = MKDirections.Request()
@@ -209,17 +188,10 @@ extension SettingsViewController {
     }
     
     func searchForUsers() {
-        guard let addressText = addressText.text, !addressText.isEmpty else {
-            return
-        }
-        
-        showRouteDirections.isOn = true
-        toggledSwitch(showRouteDirections)
+//        showRouteDirections.isOn = true
+//        toggledSwitch(showRouteDirections)
         
 //        refreshControl.startAnimating()
-        defer {
-            self.addressText.resignFirstResponder()
-        }
         
         myQuery = geoFire?.query(at: CLLocation(coordinate: self.locationManager.location!.coordinate, altitude: 0.5), withRadius: 1000)
         
@@ -228,7 +200,7 @@ extension SettingsViewController {
         
         myQuery?.observe(.keyEntered, with: { (key, location) in
             print("in query")
-            Database.database().reference().child("users").child(key).observe(.value, with: { (snapshot) in
+            Firestore.firestore().collection("users").document(key).getDocument(completion: { (snapshot, error) in
                 let userDict = snapshot.value as? [String : AnyObject] ?? [:]
                 //                if (userDict["active"]! as! String != "false") {
                 let snap_info = userDict["snap_info"] as! [String : AnyObject]
@@ -236,54 +208,52 @@ extension SettingsViewController {
                 print(snap_info)
                 
                 let destination = UserMKMapItem(coordinate: location.coordinate, profileFileURL: snap_info["bitmoji_url"] as! String, title: snap_info["display_name"] as! String)
-                destination.name = "test"
+                
+                print(destination)
                 self.mapSearchResults?.append(destination)
-                self.searchResultTable.reloadData()
+                DispatchQueue.main.async { [weak self] in
+                    self?.searchResultTable.reloadData()
+                }
+               
+                
                 print("here")
             })
+            
             //            self.resetARScene()
         })
     }
 
     /// Searches for the location that was entered into the address text
-    func searchForLocation() {
-        guard let addressText = addressText.text, !addressText.isEmpty else {
-            return
-        }
-
-        showRouteDirections.isOn = true
-        toggledSwitch(showRouteDirections)
-
-        refreshControl.startAnimating()
-        defer {
-            self.addressText.resignFirstResponder()
-        }
-
-        let request = MKLocalSearch.Request()
-        request.naturalLanguageQuery = addressText
-
-        let search = MKLocalSearch(request: request)
-        search.start { response, error in
-            defer {
-                DispatchQueue.main.async { [weak self] in
-                    self?.refreshControl.stopAnimating()
-                }
-            }
-            if let error = error {
-                return assertionFailure("Error searching for \(addressText): \(error.localizedDescription)")
-            }
-            guard let response = response, response.mapItems.count > 0 else {
-                return assertionFailure("No response or empty response")
-            }
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else {
-                    return
-                }
-                self.mapSearchResults = response.sortedMapItems(byDistanceFrom: self.locationManager.location)
-                self.searchResultTable.reloadData()
-            }
-        }
-    }
+//    func searchForLocation() {
+//        showRouteDirections.isOn = true
+//        toggledSwitch(showRouteDirections)
+//
+//        refreshControl.startAnimating()
+//        let request = MKLocalSearch.Request()
+////        request.naturalLanguageQuery = addressText
+//
+//        let search = MKLocalSearch(request: request)
+//        search.start { response, error in
+//            defer {
+//                DispatchQueue.main.async { [weak self] in
+//                    self?.refreshControl.stopAnimating()
+//                }
+//            }
+//            if let error = error {
+////                return assertionFailure("Error searching for \(addressText): \(error.localizedDescription)")
+//            }
+//            guard let response = response, response.mapItems.count > 0 else {
+//                return assertionFailure("No response or empty response")
+//            }
+//            DispatchQueue.main.async { [weak self] in
+//                guard let self = self else {
+//                    return
+//                }
+//                self.mapSearchResults = response.sortedMapItems(byDistanceFrom: self.locationManager.location)
+//                self.searchResultTable.reloadData()
+//            }
+//        }
+//    }
 }
 
 extension MKLocalSearch.Response {

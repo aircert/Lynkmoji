@@ -14,12 +14,15 @@ open class UserMKMapItem: MKMapItem {
     //    var coordinate = CLLocationCoordinate2D()
     var profileImage: UIImage?
     var titleText: String?
+    var coordinate: CLLocationCoordinate2D?
     
     init(coordinate: CLLocationCoordinate2D, profileFileURL: String, title: String) {
         
         var place: MKPlacemark!
         
         self.titleText = title
+        
+        self.coordinate = coordinate
         
         if #available(iOS 10.0, *) {
             place = MKPlacemark(coordinate: coordinate)

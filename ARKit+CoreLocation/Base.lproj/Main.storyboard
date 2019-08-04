@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="fpJ-2M-iZ2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="tWS-KW-R4l">
     <device id="retina6_1" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -134,5 +134,193 @@
             </objects>
             <point key="canvasLocation" x="-639.20000000000005" y="-43.628185907046479"/>
         </scene>
+        <!--Login Kit-->
+        <scene sceneID="C4v-Kn-V1I">
+            <objects>
+                <viewController id="1pl-eO-dbT" customClass="LoginViewController" customModule="ARKit_CoreLocation" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="cWa-Hk-kYS">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Bpe-fM-DqK">
+                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon-login-kit" translatesAutoresizingMaskIntoConstraints="NO" id="8U9-9l-nFj">
+                                        <rect key="frame" x="107" y="179.5" width="200" height="200"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="200" id="1fa-Ht-1uw"/>
+                                            <constraint firstAttribute="width" constant="200" id="c2f-Wz-bcA"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Login Kit" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fSz-9N-nUH">
+                                        <rect key="frame" x="142" y="399.5" width="130.5" height="55"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="55" id="TYW-sl-22N"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="AvenirNext-Bold" family="Avenir Next" pointSize="30"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vdr-Zx-jGq">
+                                        <rect key="frame" x="33.5" y="462" width="347" height="100"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="100" id="wzx-kR-Hx8"/>
+                                        </constraints>
+                                        <string key="text">Login Kit lets your users authenticate with Snapchat and bring their existing
+identity into your app. It uses OAuth, with Snapchat as the identity provider.</string>
+                                        <fontDescription key="fontDescription" name="AvenirNext-Medium" family="Avenir Next" pointSize="13"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="buX-J7-3WY">
+                                        <rect key="frame" x="57" y="704" width="300" height="50"/>
+                                        <color key="backgroundColor" red="1" green="0.78039215689999997" blue="0.16078431369999999" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="300" id="Uj1-I5-rr6"/>
+                                            <constraint firstAttribute="height" constant="50" id="vHc-lR-phJ"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="18"/>
+                                        <state key="normal" title="Log in with Snapchat">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="20"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="loginButtonDidTap:" destination="1pl-eO-dbT" eventType="touchUpInside" id="U49-NZ-zKt"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="fSz-9N-nUH" firstAttribute="centerY" secondItem="Bpe-fM-DqK" secondAttribute="centerY" constant="40" id="2sL-8O-2SI"/>
+                                    <constraint firstItem="fSz-9N-nUH" firstAttribute="centerX" secondItem="Bpe-fM-DqK" secondAttribute="centerX" id="AOu-go-UMC"/>
+                                    <constraint firstAttribute="bottom" secondItem="buX-J7-3WY" secondAttribute="bottom" constant="20" id="DkS-Xz-eqF"/>
+                                    <constraint firstItem="buX-J7-3WY" firstAttribute="centerX" secondItem="Bpe-fM-DqK" secondAttribute="centerX" id="JrL-pw-pkv"/>
+                                    <constraint firstItem="fSz-9N-nUH" firstAttribute="top" secondItem="8U9-9l-nFj" secondAttribute="bottom" constant="20" id="OEW-Kg-TDk"/>
+                                    <constraint firstItem="Vdr-Zx-jGq" firstAttribute="centerX" secondItem="Bpe-fM-DqK" secondAttribute="centerX" id="So3-9y-yPT"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Vdr-Zx-jGq" secondAttribute="trailing" constant="30" id="ftk-J2-qgl"/>
+                                    <constraint firstItem="8U9-9l-nFj" firstAttribute="centerX" secondItem="Bpe-fM-DqK" secondAttribute="centerX" id="mPi-Z2-DY8"/>
+                                    <constraint firstItem="Vdr-Zx-jGq" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Bpe-fM-DqK" secondAttribute="leading" constant="30" id="pdT-Rl-xRg"/>
+                                    <constraint firstItem="Vdr-Zx-jGq" firstAttribute="top" secondItem="fSz-9N-nUH" secondAttribute="bottom" constant="7.5" id="z5t-SV-EZ8"/>
+                                </constraints>
+                            </view>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="crb-T8-azH">
+                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9mK-aU-jaA">
+                                        <rect key="frame" x="35" y="35" width="344" height="704"/>
+                                        <subviews>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2km-rh-cBx">
+                                                <rect key="frame" x="108" y="216.5" width="128" height="128"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="128" id="QGa-e4-bjH"/>
+                                                    <constraint firstAttribute="height" constant="128" id="oBb-PA-lA0"/>
+                                                </constraints>
+                                            </imageView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Display Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Ut-cF-Mm0">
+                                                <rect key="frame" x="87.5" y="364.5" width="169" height="55"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="55" id="xex-ZR-19l"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="26"/>
+                                                <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="axe-O9-svJ">
+                                                <rect key="frame" x="26.5" y="439.5" width="291.5" height="100"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="100" id="QLA-cR-Gge"/>
+                                                </constraints>
+                                                <string key="text">If a Snapchatter has a Display Name in their Settings, it will be available when they connect with your app. Bitmoji can optionally be brought over.</string>
+                                                <fontDescription key="fontDescription" name="AvenirNext-Medium" family="Avenir Next" pointSize="13"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="5Ut-cF-Mm0" firstAttribute="centerX" secondItem="9mK-aU-jaA" secondAttribute="centerX" id="GNb-Hk-REi"/>
+                                            <constraint firstItem="5Ut-cF-Mm0" firstAttribute="centerY" secondItem="9mK-aU-jaA" secondAttribute="centerY" constant="40" id="Thg-gq-dsg"/>
+                                            <constraint firstItem="5Ut-cF-Mm0" firstAttribute="top" secondItem="2km-rh-cBx" secondAttribute="bottom" constant="20" id="Vwy-jT-Jbm"/>
+                                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="axe-O9-svJ" secondAttribute="trailing" constant="20" id="a4Y-x7-kOq"/>
+                                            <constraint firstItem="axe-O9-svJ" firstAttribute="centerX" secondItem="9mK-aU-jaA" secondAttribute="centerX" id="apJ-pk-gAO"/>
+                                            <constraint firstItem="2km-rh-cBx" firstAttribute="centerX" secondItem="9mK-aU-jaA" secondAttribute="centerX" id="cMw-Cg-uiZ"/>
+                                            <constraint firstItem="axe-O9-svJ" firstAttribute="top" secondItem="5Ut-cF-Mm0" secondAttribute="bottom" constant="20" id="mNr-7g-QJq"/>
+                                            <constraint firstItem="axe-O9-svJ" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="9mK-aU-jaA" secondAttribute="leading" constant="20" id="o0l-qQ-LiG"/>
+                                        </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="25"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" red="1" green="0.78039215689999997" blue="0.16078431369999999" alpha="0.84999999999999998" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstItem="9mK-aU-jaA" firstAttribute="top" secondItem="crb-T8-azH" secondAttribute="top" constant="35" id="3WI-bf-Trr"/>
+                                    <constraint firstAttribute="bottom" secondItem="9mK-aU-jaA" secondAttribute="bottom" constant="35" id="K2L-GW-rSy"/>
+                                    <constraint firstItem="9mK-aU-jaA" firstAttribute="leading" secondItem="crb-T8-azH" secondAttribute="leading" constant="35" id="h7B-Np-Adp"/>
+                                    <constraint firstAttribute="trailing" secondItem="9mK-aU-jaA" secondAttribute="trailing" constant="35" id="ydI-fP-mCB"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="G0L-t8-DQy" firstAttribute="bottom" secondItem="Bpe-fM-DqK" secondAttribute="bottom" id="0S8-KF-ytU"/>
+                            <constraint firstItem="crb-T8-azH" firstAttribute="leading" secondItem="G0L-t8-DQy" secondAttribute="leading" id="E5j-jj-FzM"/>
+                            <constraint firstItem="G0L-t8-DQy" firstAttribute="bottom" secondItem="crb-T8-azH" secondAttribute="bottom" id="NYL-nk-ckO"/>
+                            <constraint firstItem="crb-T8-azH" firstAttribute="top" secondItem="G0L-t8-DQy" secondAttribute="top" id="XhX-AQ-AiX"/>
+                            <constraint firstItem="Bpe-fM-DqK" firstAttribute="top" secondItem="G0L-t8-DQy" secondAttribute="top" id="d2t-Dy-MXe"/>
+                            <constraint firstItem="G0L-t8-DQy" firstAttribute="trailing" secondItem="Bpe-fM-DqK" secondAttribute="trailing" id="fqP-j2-iOf"/>
+                            <constraint firstItem="G0L-t8-DQy" firstAttribute="trailing" secondItem="crb-T8-azH" secondAttribute="trailing" id="jxY-rn-1Pt"/>
+                            <constraint firstItem="Bpe-fM-DqK" firstAttribute="leading" secondItem="G0L-t8-DQy" secondAttribute="leading" id="mMe-Rn-84C"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="G0L-t8-DQy"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Login Kit" id="PxL-By-WJF">
+                        <barButtonItem key="rightBarButtonItem" enabled="NO" title="Logout" id="iKB-M5-3nk">
+                            <connections>
+                                <action selector="logoutButtonDidTap:" destination="1pl-eO-dbT" id="Mqc-eP-1OH"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="avatarView" destination="2km-rh-cBx" id="cau-v3-3ta"/>
+                        <outlet property="loginButton" destination="buX-J7-3WY" id="McK-Jz-TbA"/>
+                        <outlet property="loginView" destination="Bpe-fM-DqK" id="TFx-AG-C4c"/>
+                        <outlet property="logoutButton" destination="PxL-By-WJF" id="t8y-f0-ubD"/>
+                        <outlet property="messageLabel" destination="Vdr-Zx-jGq" id="prX-t1-6bG"/>
+                        <outlet property="nameLabel" destination="5Ut-cF-Mm0" id="8Co-W7-fqz"/>
+                        <outlet property="profileView" destination="crb-T8-azH" id="rMU-wW-PZ6"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WeF-rj-9PV" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="269.56521739130437" y="-814.95535714285711"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="Mxd-9F-RwF">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="tWS-KW-R4l" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="oI8-a9-mHN">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="1pl-eO-dbT" kind="relationship" relationship="rootViewController" id="zZw-wE-trp"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sBV-yz-17H" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-642.02898550724638" y="-815.625"/>
+        </scene>
     </scenes>
+    <resources>
+        <image name="icon-login-kit" width="16" height="16"/>
+    </resources>
 </document>

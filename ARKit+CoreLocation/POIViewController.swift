@@ -22,7 +22,9 @@ class POIViewController: UIViewController {
     let sceneLocationView = SceneLocationView()
 
     var userAnnotation: MKPointAnnotation?
+    var targetAnnotation: MKPointAnnotation?
     var locationEstimateAnnotation: MKPointAnnotation?
+    var targetUser: UserMKMapItem?
 
     var updateUserLocationTimer: Timer?
     var updateInfoLabelTimer: Timer?
@@ -54,7 +56,11 @@ class POIViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        targetAnnotation = MKPointAnnotation()
+        targetAnnotation?.title = "General"
+        targetAnnotation?.coordinate = targetUser?.coordinate! ?? self.userAnnotation!.coordinate
+        
         updateInfoLabelTimer = Timer.scheduledTimer(timeInterval: 0.1,
                                                     target: self,
                                                     selector: #selector(POIViewController.updateInfoLabel),
@@ -161,6 +167,9 @@ extension POIViewController: MKMapViewDelegate {
         if pointAnnotation == self.userAnnotation {
             marker.displayPriority = .required
             marker.glyphImage = UIImage(named: "user")
+        } else if pointAnnotation == self.targetAnnotation {
+            marker.displayPriority = .required
+            marker.glyphImage = UIImage(named: "user")
         } else {
             marker.displayPriority = .required
             marker.markerTintColor = UIColor(hue: 0.267, saturation: 0.67, brightness: 0.77, alpha: 1.0)
@@ -190,9 +199,12 @@ extension POIViewController {
 
         let box = SCNBox(width: 1, height: 0.2, length: 5, chamferRadius: 0.25)
         box.firstMaterial?.diffuse.contents = UIColor.gray.withAlphaComponent(0.5)
+        
+        sceneLocationView.addLocationNodeWithConfirmedLocation(locationNode: buildNode(latitude: targetUser?.coordinate?.latitude ?? 0.00, longitude: targetUser?.coordinate?.longitude ?? 0.00, altitude: 0.05, image: targetUser?.profileImage ?? UIImage(named: "user")!))
 
         // 2. If there is a route, show that
         if let routes = routes {
+            print("adding routes")
             sceneLocationView.addRoutes(routes: routes) { distance -> SCNBox in
                 let box = SCNBox(width: 1.75, height: 0.5, length: distance, chamferRadius: 0.25)
 
@@ -209,32 +221,32 @@ extension POIViewController {
             }
         } else {
             // 3. If not, then show the
-            buildDemoData().forEach {
-                sceneLocationView.addLocationNodeWithConfirmedLocation(locationNode: $0)
-            }
+//            buildDemoData().forEach {
+//                sceneLocationView.addLocationNodeWithConfirmedLocation(locationNode: $0)
+//            }
         }
     }
 
     /// Builds the location annotations for a few random objects, scattered across the country
     ///
     /// - Returns: an array of annotation nodes.
-    func buildDemoData() -> [LocationAnnotationNode] {
-        var nodes: [LocationAnnotationNode] = []
-
-        let spaceNeedle = buildNode(latitude: 47.6205, longitude: -122.3493, altitude: 225, imageName: "pin")
-        nodes.append(spaceNeedle)
-
-        let empireStateBuilding = buildNode(latitude: 40.7484, longitude: -73.9857, altitude: 14.3, imageName: "pin")
-        nodes.append(empireStateBuilding)
-
-        let canaryWharf = buildNode(latitude: 51.504607, longitude: -0.019592, altitude: 236, imageName: "pin")
-        nodes.append(canaryWharf)
-
-        let applePark = buildViewNode(latitude: 37.334807, longitude: -122.009076, altitude: 100, text: "Apple Park")
-        nodes.append(applePark)
-
-        return nodes
-    }
+//    func buildDemoData() -> [LocationAnnotationNode] {
+//        var nodes: [LocationAnnotationNode] = []
+//
+//        let spaceNeedle = buildNode(latitude: 47.6205, longitude: -122.3493, altitude: 225, imageName: "pin")
+//        nodes.append(spaceNeedle)
+//
+//        let empireStateBuilding = buildNode(latitude: 40.7484, longitude: -73.9857, altitude: 14.3, imageName: "pin")
+//        nodes.append(empireStateBuilding)
+//
+//        let canaryWharf = buildNode(latitude: 51.504607, longitude: -0.019592, altitude: 236, imageName: "pin")
+//        nodes.append(canaryWharf)
+//
+//        let applePark = buildViewNode(latitude: 37.334807, longitude: -122.009076, altitude: 100, text: "Apple Park")
+//        nodes.append(applePark)
+//
+//        return nodes
+//    }
 
     @objc
     func updateUserLocation() {
@@ -250,6 +262,7 @@ extension POIViewController {
             if self.userAnnotation == nil {
                 self.userAnnotation = MKPointAnnotation()
                 self.mapView.addAnnotation(self.userAnnotation!)
+                self.mapView.addAnnotation(self.targetAnnotation ?? self.userAnnotation!)
             }
 
             UIView.animate(withDuration: 0.5, delay: 0, options: .allowUserInteraction, animations: {
@@ -306,10 +319,9 @@ extension POIViewController {
     }
 
     func buildNode(latitude: CLLocationDegrees, longitude: CLLocationDegrees,
-                   altitude: CLLocationDistance, imageName: String) -> LocationAnnotationNode {
+                   altitude: CLLocationDistance, image: UIImage) -> LocationAnnotationNode {
         let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         let location = CLLocation(coordinate: coordinate, altitude: altitude)
-        let image = UIImage(named: imageName)!
         return LocationAnnotationNode(location: location, image: image)
     }
 

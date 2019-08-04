@@ -182,6 +182,7 @@ extension SettingsViewController {
 
                 let arclVC = self.createARVC()
                 arclVC.routes = response.routes
+                arclVC.targetUser = mapLocation
                 self.navigationController?.pushViewController(arclVC, animated: true)
             }
         })
@@ -200,7 +201,7 @@ extension SettingsViewController {
         
         myQuery?.observe(.keyEntered, with: { (key, location) in
             print("in query")
-            Firestore.firestore().collection("users").document(key).getDocument(completion: { (snapshot, error) in
+            Database.database().reference().child("users").child(key).observe(.value, with: { (snapshot) in
                 let userDict = snapshot.value as? [String : AnyObject] ?? [:]
                 //                if (userDict["active"]! as! String != "false") {
                 let snap_info = userDict["snap_info"] as! [String : AnyObject]

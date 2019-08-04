@@ -48,7 +48,7 @@ extension LocationCell {
             locationUpdateTimer?.invalidate()
             return
         }
-        titleLabel.text = mapItem.titleLabelText
+//        titleLabel.text = mapItem.titleLabelText
 
         guard let currentLocation = currentLocation else {
             distanceLabel.text = "📡"
@@ -59,8 +59,8 @@ extension LocationCell {
             return
         }
 
-        distanceLabel.text = String(format: "%.0f km", mapItemLocation.distance(from: currentLocation)/1000)
-
+        distanceLabel.text = String(format: "%.0f ft", mapItemLocation.distance(from: currentLocation)*3.28084)
+        print(String(format: "%.0f ft", mapItemLocation.distance(from: currentLocation)/1000))
         locationUpdateTimer = Timer(timeInterval: 1, target: self, selector: #selector(updateCell), userInfo: nil, repeats: false)
         
         profileImageView.image = mapItem.profileImage

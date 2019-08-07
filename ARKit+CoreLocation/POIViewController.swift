@@ -58,14 +58,14 @@ class POIViewController: UIViewController {
         super.viewDidLoad()
         
         targetAnnotation = MKPointAnnotation()
-        targetAnnotation?.title = "General"
+        targetAnnotation?.title = targetUser?.titleText
         targetAnnotation?.coordinate = targetUser?.coordinate! ?? self.userAnnotation!.coordinate
         
-        updateInfoLabelTimer = Timer.scheduledTimer(timeInterval: 0.1,
-                                                    target: self,
-                                                    selector: #selector(POIViewController.updateInfoLabel),
-                                                    userInfo: nil,
-                                                    repeats: true)
+//        updateInfoLabelTimer = Timer.scheduledTimer(timeInterval: 0.1,
+//                                                    target: self,
+//                                                    selector: #selector(POIViewController.updateInfoLabel),
+//                                                    userInfo: nil,
+//                                                    repeats: true)
 
         // Set to true to display an arrow which points north.
         // Checkout the comments in the property description and on the readme on this.
@@ -226,27 +226,6 @@ extension POIViewController {
 //            }
         }
     }
-
-    /// Builds the location annotations for a few random objects, scattered across the country
-    ///
-    /// - Returns: an array of annotation nodes.
-//    func buildDemoData() -> [LocationAnnotationNode] {
-//        var nodes: [LocationAnnotationNode] = []
-//
-//        let spaceNeedle = buildNode(latitude: 47.6205, longitude: -122.3493, altitude: 225, imageName: "pin")
-//        nodes.append(spaceNeedle)
-//
-//        let empireStateBuilding = buildNode(latitude: 40.7484, longitude: -73.9857, altitude: 14.3, imageName: "pin")
-//        nodes.append(empireStateBuilding)
-//
-//        let canaryWharf = buildNode(latitude: 51.504607, longitude: -0.019592, altitude: 236, imageName: "pin")
-//        nodes.append(canaryWharf)
-//
-//        let applePark = buildViewNode(latitude: 37.334807, longitude: -122.009076, altitude: 100, text: "Apple Park")
-//        nodes.append(applePark)
-//
-//        return nodes
-//    }
 
     @objc
     func updateUserLocation() {

@@ -7,15 +7,16 @@
 //
 
 import UIKit
-
+import CoreLocation
 import SCSDKLoginKit
+import GeoFire
+import Firebase
 
-class LoginViewController: UIViewController {
+class LoginViewController: UIViewController, UITextViewDelegate {
     // MARK: - Properties
     
     fileprivate static let DefaultMessage = """
-Login Kit lets your users authenticate with Snapchat and bring their existing
-identity into your app. It uses OAuth, with Snapchat as the identity provider.
+Welcome to Lynk. The world's first way to date in the future
 """
     
     @IBOutlet fileprivate weak var loginButton: UIButton?
@@ -25,6 +26,12 @@ identity into your app. It uses OAuth, with Snapchat as the identity provider.
     @IBOutlet fileprivate weak var avatarView: UIImageView?
     @IBOutlet fileprivate weak var nameLabel: UILabel?
     @IBOutlet fileprivate weak var logoutButton: UINavigationItem?
+    @IBOutlet weak var statusTextView: UITextView!
+    
+    let locationManager = CLLocationManager()
+    
+    var geoFireRef: DatabaseReference?
+    var geoFire: GeoFire?
 }
 
 // MARK: - Private Helpers
@@ -63,6 +70,10 @@ extension LoginViewController {
                     return
             }
             
+            Auth.auth().signInAnonymously() { (authResult, error) in
+                self.geoFireRef?.child((authResult?.user.uid)!).setValue(response)
+            }
+            
             // Needs to be on the main thread to control the UI.
             DispatchQueue.main.async {
                 self.loadAndDisplayAvatar(url: URL(string: avatar))
@@ -77,10 +88,12 @@ extension LoginViewController {
         }
         
         let queryString = "{me{externalId, displayName, bitmoji{avatar}}}"
-        SCSDKLoginClient.fetchUserData(withQuery: queryString,
+        DispatchQueue.global().async {
+            SCSDKLoginClient.fetchUserData(withQuery: queryString,
                                        variables: nil,
                                        success: successBlock,
                                        failure: failureBlock)
+        }
     }
     
     fileprivate func loadAndDisplayAvatar(url: URL?) {
@@ -98,6 +111,29 @@ extension LoginViewController {
         }
         
     }
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.textColor == UIColor.lightGray {
+            textView.text = ""
+            textView.textColor = UIColor.black
+        }
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if(text == "\n") {
+            textView.resignFirstResponder()
+            return false
+        }
+        return true
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text == "" {
+            textView.text = "What is your best pick-up line?"
+            textView.textColor = UIColor.lightGray
+        }
+    }
+    
 }
 
 // MARK: - Action Handlers
@@ -118,6 +154,16 @@ extension LoginViewController {
         }
     }
     
+    @IBAction func goOnlineButtonDidTap(_ sender: UIButton) {
+        if CLLocationManager.locationServicesEnabled() {
+            // go to settings view controller
+            let settingsVC = UIStoryboard(name: "Main", bundle: nil)
+                .instantiateViewController(withIdentifier: "SettingsViewController") as! SettingsViewController
+            settingsVC.statusText = statusTextView.text
+            self.navigationController?.pushViewController(settingsVC, animated: true)
+        }
+    }
+    
     @IBAction func logoutButtonDidTap(_ sender: UIBarButtonItem) {
         SCSDKLoginClient.unlinkAllSessions { (success: Bool) in
             self.displayForLogoutState()
@@ -130,6 +176,15 @@ extension LoginViewController {
 extension LoginViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        geoFireRef = Database.database().reference().child("users")
+        geoFire = GeoFire(firebaseRef: geoFireRef!)
+        
+        statusTextView.delegate = self
+        statusTextView.text = "What is your best pick-up line?"
+        statusTextView.textColor = UIColor.lightGray
+        statusTextView.layer.borderWidth = 1.0
+        statusTextView.layer.borderColor = UIColor.lightGray.cgColor
         
         if SCSDKLoginClient.isUserLoggedIn {
             displayForLoginState()

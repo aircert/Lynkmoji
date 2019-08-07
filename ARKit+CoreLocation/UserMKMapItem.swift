@@ -15,6 +15,7 @@ open class UserMKMapItem: MKMapItem {
     var profileImage: UIImage?
     var titleText: String?
     var coordinate: CLLocationCoordinate2D?
+    var annotation: UserPointAnnotation?
     
     init(coordinate: CLLocationCoordinate2D, profileFileURL: String, title: String) {
         
@@ -36,6 +37,12 @@ open class UserMKMapItem: MKMapItem {
             let url = URL(string: profileFileURL)!
             let data = try Data(contentsOf: url)
             self.profileImage = UIImage(data: data, scale: 3)
+            
+            // Reference annotation for mapView
+            self.annotation = UserPointAnnotation()
+            self.annotation?.coordinate = coordinate
+            self.annotation?.title = title
+            self.annotation?.pinUserImage = self.profileImage
         }
         catch {
             //            bitmojiImage = SCSDKBitmojiIconView().defaultImage

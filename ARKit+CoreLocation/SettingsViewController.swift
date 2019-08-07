@@ -23,13 +23,19 @@ class SettingsViewController: UIViewController {
     var locationManager = CLLocationManager()
 
     var mapSearchResults: [UserMKMapItem]? = []
+    
+    var statusText: String?
 
     var geoFireRef: DatabaseReference?
     var geoFire: GeoFire?
     var myQuery: GFQuery?
+    
+    let userCache = NSCache<NSString, UserMKMapItem>()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
 
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager.distanceFilter = kCLDistanceFilterNone
@@ -50,7 +56,8 @@ class SettingsViewController: UIViewController {
         searchResultTable.register(UINib(nibName: "LocationCell", bundle: nil), forCellReuseIdentifier: "LocationCell")
         
         searchResultTable.rowHeight = UITableView.automaticDimension
-        searchResultTable.estimatedRowHeight = 120
+        searchResultTable.estimatedRowHeight = 100
+        searchResultTable.rowHeight = 100.0
         
         searchForUsers()
         
@@ -58,7 +65,7 @@ class SettingsViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: animated)
+        self.geoFireRef?.child(Auth.auth().currentUser!.uid).updateChildValues(["statusText": self.statusText!])
     }
 
     @IBAction
@@ -110,7 +117,6 @@ extension SettingsViewController: UITableViewDataSource {
         locationCell.locationManager = locationManager
         locationCell.mapItem = mapSearchResults[indexPath.row]
         
-        print("going here")
         return locationCell
     }
 }
@@ -136,7 +142,10 @@ extension SettingsViewController: UITableViewDelegate {
 extension SettingsViewController: CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-
+        guard let location = locations.last,
+            let userID = Auth.auth().currentUser?.uid
+            else { return }
+        self.geoFire?.setLocation(location, forKey: userID)
     }
 }
 
@@ -150,6 +159,12 @@ extension SettingsViewController {
         arclVC.showMap = true
 
         return arclVC
+    }
+    
+    @IBAction func mapButtonTapped(_ sender: Any) {
+        let mapVC = MapViewController.loadFromStoryboard()
+        mapVC.mapSearchResults = mapSearchResults
+        self.navigationController?.pushViewController(mapVC, animated: true)
     }
 
     func getDirections(to mapLocation: UserMKMapItem) {
@@ -194,84 +209,28 @@ extension SettingsViewController {
         
 //        refreshControl.startAnimating()
         
-        myQuery = geoFire?.query(at: CLLocation(coordinate: self.locationManager.location!.coordinate, altitude: 0.5), withRadius: 1000)
-        
-        print("building")
-        print(self.locationManager.location!.coordinate)
+        myQuery = geoFire?.query(at: CLLocation(coordinate: self.locationManager.location!.coordinate, altitude: 0.5), withRadius: 100)
         
         myQuery?.observe(.keyEntered, with: { (key, location) in
-            print("in query")
             Database.database().reference().child("users").child(key).observe(.value, with: { (snapshot) in
                 let userDict = snapshot.value as? [String : AnyObject] ?? [:]
-                //                if (userDict["active"]! as! String != "false") {
-                let snap_info = userDict["snap_info"] as! [String : AnyObject]
+                let data = userDict["data"] as! [String : AnyObject]
+                let me = data["me"] as! [String : AnyObject]
                 
-                print(snap_info)
-                
-                let destination = UserMKMapItem(coordinate: location.coordinate, profileFileURL: snap_info["bitmoji_url"] as! String, title: snap_info["display_name"] as! String)
-                
-                print(destination)
-                self.mapSearchResults?.append(destination)
-                DispatchQueue.main.async { [weak self] in
-                    self?.searchResultTable.reloadData()
+                if((self.userCache.object(forKey: key as NSString)) == nil && key != Auth.auth().currentUser?.uid) {
+                    let destination = UserMKMapItem(coordinate: location.coordinate, profileFileURL: me["bitmoji"]?["avatar"] as! String, title: userDict["statusText"] as! String)
+                    self.mapSearchResults?.append(destination)
+                    DispatchQueue.main.async { [weak self] in
+                        self?.searchResultTable.reloadData()
+                    }
+                    self.userCache.setObject(destination, forKey: key as NSString)
                 }
-               
-                
-                print("here")
             })
-            
-            //            self.resetARScene()
         })
-    }
-
-    /// Searches for the location that was entered into the address text
-//    func searchForLocation() {
-//        showRouteDirections.isOn = true
-//        toggledSwitch(showRouteDirections)
-//
-//        refreshControl.startAnimating()
-//        let request = MKLocalSearch.Request()
-////        request.naturalLanguageQuery = addressText
-//
-//        let search = MKLocalSearch(request: request)
-//        search.start { response, error in
-//            defer {
-//                DispatchQueue.main.async { [weak self] in
-//                    self?.refreshControl.stopAnimating()
-//                }
-//            }
-//            if let error = error {
-////                return assertionFailure("Error searching for \(addressText): \(error.localizedDescription)")
-//            }
-//            guard let response = response, response.mapItems.count > 0 else {
-//                return assertionFailure("No response or empty response")
-//            }
-//            DispatchQueue.main.async { [weak self] in
-//                guard let self = self else {
-//                    return
-//                }
-//                self.mapSearchResults = response.sortedMapItems(byDistanceFrom: self.locationManager.location)
-//                self.searchResultTable.reloadData()
-//            }
-//        }
-//    }
-}
-
-extension MKLocalSearch.Response {
-
-    func sortedMapItems(byDistanceFrom location: CLLocation?) -> [MKMapItem] {
-        guard let location = location else {
-            return mapItems
-        }
-
-        return mapItems.sorted { (first, second) -> Bool in
-            guard let d1 = first.placemark.location?.distance(from: location),
-                let d2 = second.placemark.location?.distance(from: location) else {
-                    return true
-            }
-
-            return d1 < d2
+        
+        myQuery?.observeReady{
+//            self.searchResultTable.reloadData()
+            print("All initial data has been loaded and events have been fired for circle query!")
         }
     }
-
 }

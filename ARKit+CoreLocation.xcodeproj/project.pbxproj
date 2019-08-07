@@ -22,6 +22,10 @@
 		49A3FBE81F09988100AA59C8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49A3FBE61F09988100AA59C8 /* LaunchScreen.storyboard */; };
 		580A603392EEF4589D68F428 /* Pods_ARKit_CoreLocation_ARCLTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE4378FAA43D764F4F6D0513 /* Pods_ARKit_CoreLocation_ARCLTests.framework */; };
 		932EF23220BE7E6E0052210C /* ARCLTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932EF23120BE7E6E0052210C /* ARCLTests.swift */; };
+		980AD2D122F8B46D00BC3D60 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 980AD2D022F8B46D00BC3D60 /* MapViewController.swift */; };
+		980AD2D322F8BF3D00BC3D60 /* UserPointAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 980AD2D222F8BF3D00BC3D60 /* UserPointAnnotation.swift */; };
+		980AD2D522F9448600BC3D60 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 980AD2D422F9448600BC3D60 /* StoreKit.framework */; };
+		980AD2D722F9450400BC3D60 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 980AD2D622F9450400BC3D60 /* MapKit.framework */; };
 		9874133422F771FB005C0243 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9874133322F771FB005C0243 /* LoginViewController.swift */; };
 		FD16010922EE75190055B4A8 /* LocationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FD16010822EE75190055B4A8 /* LocationCell.xib */; };
 		FD88F16522EBD37F0005EDD2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FD88F16422EBD37F0005EDD2 /* GoogleService-Info.plist */; };
@@ -61,6 +65,10 @@
 		932EF22A20BE7E6E0052210C /* ARCLTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ARCLTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		932EF23120BE7E6E0052210C /* ARCLTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARCLTests.swift; sourceTree = "<group>"; };
 		932EF23320BE7E6E0052210C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		980AD2D022F8B46D00BC3D60 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		980AD2D222F8BF3D00BC3D60 /* UserPointAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPointAnnotation.swift; sourceTree = "<group>"; };
+		980AD2D422F9448600BC3D60 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		980AD2D622F9450400BC3D60 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		9874133322F771FB005C0243 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		987CF5558E9B786105AD6834 /* Pods-ARKit+CoreLocation-ARCLTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARKit+CoreLocation-ARCLTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ARKit+CoreLocation-ARCLTests/Pods-ARKit+CoreLocation-ARCLTests.release.xcconfig"; sourceTree = "<group>"; };
 		994C280456570735FF51D68E /* Pods-ARKit+CoreLocation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARKit+CoreLocation.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ARKit+CoreLocation/Pods-ARKit+CoreLocation.debug.xcconfig"; sourceTree = "<group>"; };
@@ -79,6 +87,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				34D7563D99636C75B885A566 /* Pods_ARKit_CoreLocation.framework in Frameworks */,
+				980AD2D722F9450400BC3D60 /* MapKit.framework in Frameworks */,
+				980AD2D522F9448600BC3D60 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,6 +159,7 @@
 				49A3FBE61F09988100AA59C8 /* LaunchScreen.storyboard */,
 				12318E391F3B444400ACAD16 /* Main.storyboard */,
 				36B3F34A221D077700745096 /* SettingsViewController.swift */,
+				980AD2D022F8B46D00BC3D60 /* MapViewController.swift */,
 				3643DAEA221E30C6002BEAFC /* UIButton+Designable.swift */,
 				3643DAEC221E3390002BEAFC /* OpenARCell.swift */,
 				3643DAEE221E3840002BEAFC /* LocationCell.swift */,
@@ -157,6 +168,7 @@
 				FD16010822EE75190055B4A8 /* LocationCell.xib */,
 				FD88F16422EBD37F0005EDD2 /* GoogleService-Info.plist */,
 				49A3FBE91F09988100AA59C8 /* Info.plist */,
+				980AD2D222F8BF3D00BC3D60 /* UserPointAnnotation.swift */,
 			);
 			path = "ARKit+CoreLocation";
 			sourceTree = "<group>";
@@ -181,6 +193,8 @@
 		F2E2E005FD78BDD52B0F8A94 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				980AD2D622F9450400BC3D60 /* MapKit.framework */,
+				980AD2D422F9448600BC3D60 /* StoreKit.framework */,
 				6C10523EF85AA6B7CDF962AD /* Pods_ARKit_CoreLocation.framework */,
 				AE4378FAA43D764F4F6D0513 /* Pods_ARKit_CoreLocation_ARCLTests.framework */,
 			);
@@ -243,6 +257,14 @@
 					49A3FBD71F09988100AA59C8 = {
 						CreatedOnToolsVersion = 9.0;
 						LastSwiftMigration = 1100;
+						SystemCapabilities = {
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					932EF22920BE7E6E0052210C = {
 						CreatedOnToolsVersion = 9.4;
@@ -436,12 +458,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				12318E3D1F3B457200ACAD16 /* Utils.swift in Sources */,
+				980AD2D322F8BF3D00BC3D60 /* UserPointAnnotation.swift in Sources */,
 				49A3FBE01F09988100AA59C8 /* POIViewController.swift in Sources */,
 				369336F3221B4B730097D8FA /* NotSupportedViewController.swift in Sources */,
 				36B3F34B221D077700745096 /* SettingsViewController.swift in Sources */,
 				FDF8A9D122EE40C5004C8676 /* UserMKMapItem.swift in Sources */,
 				49A3FBDC1F09988100AA59C8 /* AppDelegate.swift in Sources */,
 				3643DAED221E3390002BEAFC /* OpenARCell.swift in Sources */,
+				980AD2D122F8B46D00BC3D60 /* MapViewController.swift in Sources */,
 				3643DAEF221E3840002BEAFC /* LocationCell.swift in Sources */,
 				3643DAEB221E30C6002BEAFC /* UIButton+Designable.swift in Sources */,
 				36D99E3222BFEA2E00D09952 /* POIViewController+ARSCNViewDelegate.swift in Sources */,

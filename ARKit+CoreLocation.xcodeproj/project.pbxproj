@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		12318E3B1F3B444400ACAD16 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 12318E391F3B444400ACAD16 /* Main.storyboard */; };
-		12318E3D1F3B457200ACAD16 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12318E3C1F3B457200ACAD16 /* Utils.swift */; };
 		34D7563D99636C75B885A566 /* Pods_ARKit_CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C10523EF85AA6B7CDF962AD /* Pods_ARKit_CoreLocation.framework */; };
 		3643DAEB221E30C6002BEAFC /* UIButton+Designable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3643DAEA221E30C6002BEAFC /* UIButton+Designable.swift */; };
 		3643DAED221E3390002BEAFC /* OpenARCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3643DAEC221E3390002BEAFC /* OpenARCell.swift */; };
@@ -27,6 +26,10 @@
 		980AD2D522F9448600BC3D60 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 980AD2D422F9448600BC3D60 /* StoreKit.framework */; };
 		980AD2D722F9450400BC3D60 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 980AD2D622F9450400BC3D60 /* MapKit.framework */; };
 		9874133422F771FB005C0243 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9874133322F771FB005C0243 /* LoginViewController.swift */; };
+		98BC5EF222FA7A26004FBE0A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98BC5EF122FA7A26004FBE0A /* ViewController.swift */; };
+		98EC441622FA84C400FFC991 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98EC441322FA84C300FFC991 /* Settings.swift */; };
+		98EC441722FA84C400FFC991 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98EC441422FA84C300FFC991 /* SettingsTableViewController.swift */; };
+		98EC441822FA84C400FFC991 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98EC441522FA84C400FFC991 /* Utils.swift */; };
 		FD16010922EE75190055B4A8 /* LocationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FD16010822EE75190055B4A8 /* LocationCell.xib */; };
 		FD88F16522EBD37F0005EDD2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FD88F16422EBD37F0005EDD2 /* GoogleService-Info.plist */; };
 		FDF8A9D122EE40C5004C8676 /* UserMKMapItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF8A9D022EE40C4004C8676 /* UserMKMapItem.swift */; };
@@ -44,7 +47,6 @@
 
 /* Begin PBXFileReference section */
 		12318E3A1F3B444400ACAD16 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		12318E3C1F3B457200ACAD16 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		1E7C77DDDCAA4CE276E115F1 /* Pods-ARKit+CoreLocation-ARCLTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARKit+CoreLocation-ARCLTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ARKit+CoreLocation-ARCLTests/Pods-ARKit+CoreLocation-ARCLTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3643DAEA221E30C6002BEAFC /* UIButton+Designable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Designable.swift"; sourceTree = "<group>"; };
 		3643DAEC221E3390002BEAFC /* OpenARCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenARCell.swift; sourceTree = "<group>"; };
@@ -71,6 +73,10 @@
 		980AD2D622F9450400BC3D60 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		9874133322F771FB005C0243 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		987CF5558E9B786105AD6834 /* Pods-ARKit+CoreLocation-ARCLTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARKit+CoreLocation-ARCLTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ARKit+CoreLocation-ARCLTests/Pods-ARKit+CoreLocation-ARCLTests.release.xcconfig"; sourceTree = "<group>"; };
+		98BC5EF122FA7A26004FBE0A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		98EC441322FA84C300FFC991 /* Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		98EC441422FA84C300FFC991 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
+		98EC441522FA84C400FFC991 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		994C280456570735FF51D68E /* Pods-ARKit+CoreLocation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARKit+CoreLocation.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ARKit+CoreLocation/Pods-ARKit+CoreLocation.debug.xcconfig"; sourceTree = "<group>"; };
 		9F567B68B145F555A5EF8F47 /* Pods-ARKit+CoreLocation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ARKit+CoreLocation.release.xcconfig"; path = "Pods/Target Support Files/Pods-ARKit+CoreLocation/Pods-ARKit+CoreLocation.release.xcconfig"; sourceTree = "<group>"; };
 		AE4378FAA43D764F4F6D0513 /* Pods_ARKit_CoreLocation_ARCLTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ARKit_CoreLocation_ARCLTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -150,9 +156,9 @@
 		49A3FBDA1F09988100AA59C8 /* ARKit+CoreLocation */ = {
 			isa = PBXGroup;
 			children = (
+				98EC441222FA84B100FFC991 /* Utils */,
 				9874133222F771E4005C0243 /* SnapClasses */,
 				49A3FBDB1F09988100AA59C8 /* AppDelegate.swift */,
-				12318E3C1F3B457200ACAD16 /* Utils.swift */,
 				49A3FBDF1F09988100AA59C8 /* POIViewController.swift */,
 				D8C205D01F5B197200675E6E /* NotSupportedViewController.swift */,
 				49A3FBE41F09988100AA59C8 /* Assets.xcassets */,
@@ -169,6 +175,7 @@
 				FD88F16422EBD37F0005EDD2 /* GoogleService-Info.plist */,
 				49A3FBE91F09988100AA59C8 /* Info.plist */,
 				980AD2D222F8BF3D00BC3D60 /* UserPointAnnotation.swift */,
+				98BC5EF122FA7A26004FBE0A /* ViewController.swift */,
 			);
 			path = "ARKit+CoreLocation";
 			sourceTree = "<group>";
@@ -188,6 +195,16 @@
 				9874133322F771FB005C0243 /* LoginViewController.swift */,
 			);
 			path = SnapClasses;
+			sourceTree = "<group>";
+		};
+		98EC441222FA84B100FFC991 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				98EC441322FA84C300FFC991 /* Settings.swift */,
+				98EC441422FA84C300FFC991 /* SettingsTableViewController.swift */,
+				98EC441522FA84C400FFC991 /* Utils.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 		F2E2E005FD78BDD52B0F8A94 /* Frameworks */ = {
@@ -360,6 +377,7 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ARKit+CoreLocation/Pods-ARKit+CoreLocation-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/ARCL/ARCL.framework",
+				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/PINCache/PINCache.framework",
@@ -368,12 +386,14 @@
 				"${PODS_ROOT}/SnapSDK/SCSDKCoreKit.framework",
 				"${PODS_ROOT}/SnapSDK/SCSDKCreativeKit.framework",
 				"${PODS_ROOT}/SnapSDK/SCSDKLoginKit.framework",
+				"${PODS_ROOT}/TwilioVideo/Build/iOS/TwilioVideo.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ARCL.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PINCache.framework",
@@ -382,6 +402,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SCSDKCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SCSDKCreativeKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SCSDKLoginKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwilioVideo.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
@@ -398,6 +419,7 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-ARKit+CoreLocation-ARCLTests/Pods-ARKit+CoreLocation-ARCLTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/ARCL/ARCL.framework",
+				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/PINCache/PINCache.framework",
@@ -406,12 +428,14 @@
 				"${PODS_ROOT}/SnapSDK/SCSDKCoreKit.framework",
 				"${PODS_ROOT}/SnapSDK/SCSDKCreativeKit.framework",
 				"${PODS_ROOT}/SnapSDK/SCSDKLoginKit.framework",
+				"${PODS_ROOT}/TwilioVideo/Build/iOS/TwilioVideo.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ARCL.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PINCache.framework",
@@ -420,6 +444,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SCSDKCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SCSDKCreativeKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SCSDKLoginKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwilioVideo.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
@@ -457,16 +482,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12318E3D1F3B457200ACAD16 /* Utils.swift in Sources */,
 				980AD2D322F8BF3D00BC3D60 /* UserPointAnnotation.swift in Sources */,
 				49A3FBE01F09988100AA59C8 /* POIViewController.swift in Sources */,
 				369336F3221B4B730097D8FA /* NotSupportedViewController.swift in Sources */,
+				98BC5EF222FA7A26004FBE0A /* ViewController.swift in Sources */,
 				36B3F34B221D077700745096 /* SettingsViewController.swift in Sources */,
 				FDF8A9D122EE40C5004C8676 /* UserMKMapItem.swift in Sources */,
 				49A3FBDC1F09988100AA59C8 /* AppDelegate.swift in Sources */,
 				3643DAED221E3390002BEAFC /* OpenARCell.swift in Sources */,
+				98EC441822FA84C400FFC991 /* Utils.swift in Sources */,
+				98EC441622FA84C400FFC991 /* Settings.swift in Sources */,
 				980AD2D122F8B46D00BC3D60 /* MapViewController.swift in Sources */,
 				3643DAEF221E3840002BEAFC /* LocationCell.swift in Sources */,
+				98EC441722FA84C400FFC991 /* SettingsTableViewController.swift in Sources */,
 				3643DAEB221E30C6002BEAFC /* UIButton+Designable.swift in Sources */,
 				36D99E3222BFEA2E00D09952 /* POIViewController+ARSCNViewDelegate.swift in Sources */,
 				9874133422F771FB005C0243 /* LoginViewController.swift in Sources */,

@@ -35,8 +35,6 @@ class SettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager.distanceFilter = kCLDistanceFilterNone
         locationManager.headingFilter = kCLHeadingFilterNone
@@ -59,13 +57,14 @@ class SettingsViewController: UIViewController {
         searchResultTable.estimatedRowHeight = 100
         searchResultTable.rowHeight = 100.0
         
-        searchForUsers()
-        
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.geoFireRef?.child(Auth.auth().currentUser!.uid).updateChildValues(["statusText": self.statusText!])
+//        self.geoFireRef?.child(Auth.auth().currentUser!.uid).updateChildValues(["statusText": self.statusText])
+        if let location = self.locationManager.location {
+            searchForUsers(location: location)
+        }
     }
 
     @IBAction
@@ -85,7 +84,7 @@ extension SettingsViewController: UITextFieldDelegate {
 
         if string == "\n" {
             DispatchQueue.main.async { [weak self] in
-                self?.searchForUsers()
+//                self?.searchForUsers(location: CLLocation)
             }
         }
 
@@ -131,7 +130,7 @@ extension SettingsViewController: UITableViewDelegate {
             return
         }
         let selectedMapItem = mapSearchResults[indexPath.row]
-        getDirections(to: selectedMapItem)
+        getDirections(to: selectedMapItem, roomID: selectedMapItem.roomID!)
     }
 
 }
@@ -146,6 +145,7 @@ extension SettingsViewController: CLLocationManagerDelegate {
             let userID = Auth.auth().currentUser?.uid
             else { return }
         self.geoFire?.setLocation(location, forKey: userID)
+        self.searchForUsers(location: location)
     }
 }
 
@@ -161,13 +161,20 @@ extension SettingsViewController {
         return arclVC
     }
     
+    func createCameraVC () -> ViewController {
+        let cameraVC = ViewController.loadFromStoryboard()
+        cameraVC.autoConnect = true
+        
+        return cameraVC
+    }
+    
     @IBAction func mapButtonTapped(_ sender: Any) {
         let mapVC = MapViewController.loadFromStoryboard()
         mapVC.mapSearchResults = mapSearchResults
         self.navigationController?.pushViewController(mapVC, animated: true)
     }
 
-    func getDirections(to mapLocation: UserMKMapItem) {
+    func getDirections(to mapLocation: UserMKMapItem, roomID: String) {
         refreshControl.startAnimating()
 
         let request = MKDirections.Request()
@@ -198,39 +205,49 @@ extension SettingsViewController {
                 let arclVC = self.createARVC()
                 arclVC.routes = response.routes
                 arclVC.targetUser = mapLocation
+                arclVC.targetUser?.annotation = mapLocation.annotation
+                
+//                let cameraVC = self.createCameraVC()
+//                cameraVC.roomID = roomID
+            
                 self.navigationController?.pushViewController(arclVC, animated: true)
             }
         })
     }
     
-    func searchForUsers() {
+    func searchForUsers(location: CLLocation) {
 //        showRouteDirections.isOn = true
 //        toggledSwitch(showRouteDirections)
         
 //        refreshControl.startAnimating()
-        
-        myQuery = geoFire?.query(at: CLLocation(coordinate: self.locationManager.location!.coordinate, altitude: 0.5), withRadius: 100)
+        myQuery = geoFire?.query(at: CLLocation(coordinate: location.coordinate, altitude: 0.5), withRadius: 10)
         
         myQuery?.observe(.keyEntered, with: { (key, location) in
             Database.database().reference().child("users").child(key).observe(.value, with: { (snapshot) in
                 let userDict = snapshot.value as? [String : AnyObject] ?? [:]
-                let data = userDict["data"] as! [String : AnyObject]
-                let me = data["me"] as! [String : AnyObject]
-                
-                if((self.userCache.object(forKey: key as NSString)) == nil && key != Auth.auth().currentUser?.uid) {
-                    let destination = UserMKMapItem(coordinate: location.coordinate, profileFileURL: me["bitmoji"]?["avatar"] as! String, title: userDict["statusText"] as! String)
-                    self.mapSearchResults?.append(destination)
-                    DispatchQueue.main.async { [weak self] in
-                        self?.searchResultTable.reloadData()
+                if let data = userDict["data"] {
+                    let me = data["me"] as! [String : AnyObject]
+                    
+                    if((self.userCache.object(forKey: key as NSString)) == nil && key != Auth.auth().currentUser?.uid) {
+                        let destination = UserMKMapItem(coordinate: location.coordinate, profileFileURL: me["bitmoji"]?["avatar"] as! String, title: me["externalId"]as! String, roomID: me["externalId"] as! String)
+                        self.mapSearchResults?.append(destination)
+                        DispatchQueue.main.async { [weak self] in
+                            self?.searchResultTable.reloadData()
+                        }
+                        self.userCache.setObject(destination, forKey: key as NSString)
+                    } else if(self.mapSearchResults!.count > 0) {
+//                        self.geoFireRef?.child(Auth.auth().currentUser!.uid).updateChildValues(["matched": self.mapSearchResults!.last?.roomID])
+//                        self.getDirections(to: self.mapSearchResults!.last!, roomID: me["externalId"] as! String)
                     }
-                    self.userCache.setObject(destination, forKey: key as NSString)
+                } else {
+                   return
                 }
+                
             })
         })
         
         myQuery?.observeReady{
-//            self.searchResultTable.reloadData()
-            print("All initial data has been loaded and events have been fired for circle query!")
+//            print("All initial data has been loaded and events have been fired for circle query!")
         }
     }
 }

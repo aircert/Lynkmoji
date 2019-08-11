@@ -14,14 +14,15 @@ open class UserMKMapItem: MKMapItem {
     //    var coordinate = CLLocationCoordinate2D()
     var profileImage: UIImage?
     var titleText: String?
+    var roomID: String?
     var coordinate: CLLocationCoordinate2D?
     var annotation: UserPointAnnotation?
     
-    init(coordinate: CLLocationCoordinate2D, profileFileURL: String, title: String) {
+    init(coordinate: CLLocationCoordinate2D, profileFileURL: String, title: String, roomID: String) {
         
         var place: MKPlacemark!
         
-        self.titleText = title
+        self.titleText = roomID
         
         self.coordinate = coordinate
         
@@ -43,6 +44,8 @@ open class UserMKMapItem: MKMapItem {
             self.annotation?.coordinate = coordinate
             self.annotation?.title = title
             self.annotation?.pinUserImage = self.profileImage
+            
+            self.roomID = roomID
         }
         catch {
             //            bitmojiImage = SCSDKBitmojiIconView().defaultImage

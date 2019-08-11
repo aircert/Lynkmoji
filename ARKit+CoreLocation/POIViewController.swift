@@ -22,10 +22,12 @@ class POIViewController: UIViewController {
     let sceneLocationView = SceneLocationView()
 
     var userAnnotation: MKPointAnnotation?
-    var targetAnnotation: MKPointAnnotation?
+    var targetAnnotation: UserPointAnnotation?
     var locationEstimateAnnotation: MKPointAnnotation?
     var targetUser: UserMKMapItem?
 
+    @IBOutlet weak var cameraView: UIView!
+    
     var updateUserLocationTimer: Timer?
     var updateInfoLabelTimer: Timer?
 
@@ -57,10 +59,10 @@ class POIViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        targetAnnotation = MKPointAnnotation()
-        targetAnnotation?.title = targetUser?.titleText
-        targetAnnotation?.coordinate = targetUser?.coordinate! ?? self.userAnnotation!.coordinate
-        
+//        targetAnnotation = targetUser?.annotation
+//        targetAnnotation?.title = "\n Code: \(targetUser?.titleText!)"
+//        targetAnnotation?.coordinate = targetUser?.coordinate! ?? self.userAnnotation!.coordinate
+//        targetAnnotation?.pinUserImage = targetUser?.profileImage
 //        updateInfoLabelTimer = Timer.scheduledTimer(timeInterval: 0.1,
 //                                                    target: self,
 //                                                    selector: #selector(POIViewController.updateInfoLabel),
@@ -79,10 +81,10 @@ class POIViewController: UIViewController {
         sceneLocationView.arViewDelegate = self
 
         // Now add the route or location annotations as appropriate
-        addSceneModels()
+//        addSceneModels()
 
-        contentView.addSubview(sceneLocationView)
-        sceneLocationView.frame = contentView.bounds
+//        contentView.addSubview(sceneLocationView)
+//        sceneLocationView.frame = contentView.bounds
 
         mapView.isHidden = !showMap
 
@@ -102,7 +104,7 @@ class POIViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
         print("run")
-        sceneLocationView.run()
+//        sceneLocationView.run()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -157,26 +159,33 @@ extension POIViewController: MKMapViewDelegate {
 
         return renderer
     }
-
+    
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        guard !(annotation is MKUserLocation),
-           let pointAnnotation = annotation as? MKPointAnnotation else { return nil }
-
-        let marker = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
-
-        if pointAnnotation == self.userAnnotation {
-            marker.displayPriority = .required
-            marker.glyphImage = UIImage(named: "user")
-        } else if pointAnnotation == self.targetAnnotation {
-            marker.displayPriority = .required
-            marker.glyphImage = UIImage(named: "user")
+       
+//            let pointAnnotation = annotation else { return }
+        
+       
+        
+        if (annotation is MKUserLocation) {
+            return nil
         } else {
-            marker.displayPriority = .required
-            marker.markerTintColor = UIColor(hue: 0.267, saturation: 0.67, brightness: 0.77, alpha: 1.0)
-            marker.glyphImage = UIImage(named: "compass")
+            let marker = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
+            if annotation.title == self.targetAnnotation?.title {
+                marker.displayPriority = .required
+                marker.glyphImage = targetUser?.annotation?.pinUserImage
+                return nil
+            } else {
+                print("default")
+                marker.displayPriority = .required
+                marker.markerTintColor = UIColor(hue: 0.267, saturation: 0.67, brightness: 0.77, alpha: 1.0)
+                marker.glyphImage = nil
+                marker.image = targetUser?.annotation?.pinUserImage
+            }
+            
+            return marker
+            
+            print("in here")
         }
-
-        return marker
     }
 }
 
@@ -241,12 +250,13 @@ extension POIViewController {
             if self.userAnnotation == nil {
                 self.userAnnotation = MKPointAnnotation()
                 self.mapView.addAnnotation(self.userAnnotation!)
-                self.mapView.addAnnotation(self.targetAnnotation ?? self.userAnnotation!)
+                self.mapView.addAnnotation(self.targetUser!.annotation!)
+                UIView.animate(withDuration: 0.5, delay: 0, options: .allowUserInteraction, animations: {
+                    self.userAnnotation?.coordinate = currentLocation.coordinate
+                }, completion: nil)
             }
 
-            UIView.animate(withDuration: 0.5, delay: 0, options: .allowUserInteraction, animations: {
-                self.userAnnotation?.coordinate = currentLocation.coordinate
-            }, completion: nil)
+            
 
             if self.centerMapOnUserLocation {
                 UIView.animate(withDuration: 0.45,

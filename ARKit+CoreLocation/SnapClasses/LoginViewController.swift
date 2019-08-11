@@ -16,7 +16,12 @@ class LoginViewController: UIViewController, UITextViewDelegate {
     // MARK: - Properties
     
     fileprivate static let DefaultMessage = """
-Welcome to Lynk. The world's first way to date in the future
+The world's first way to date in the future
+"""
+    
+    
+    fileprivate static let DefaultMessageStatus = """
+What is your share code?
 """
     
     @IBOutlet fileprivate weak var loginButton: UIButton?
@@ -24,7 +29,9 @@ Welcome to Lynk. The world's first way to date in the future
     @IBOutlet fileprivate weak var loginView: UIView?
     @IBOutlet fileprivate weak var profileView: UIView?
     @IBOutlet fileprivate weak var avatarView: UIImageView?
+    @IBOutlet weak var lynkAvatarView: UIImageView!
     @IBOutlet fileprivate weak var nameLabel: UILabel?
+    @IBOutlet weak var lynkNameLabel: UILabel!
     @IBOutlet fileprivate weak var logoutButton: UINavigationItem?
     @IBOutlet weak var statusTextView: UITextView!
     
@@ -32,6 +39,11 @@ Welcome to Lynk. The world's first way to date in the future
     
     var geoFireRef: DatabaseReference?
     var geoFire: GeoFire?
+    var myQuery: GFQuery?
+    
+    let userCache = NSCache<NSString, UserMKMapItem>()
+    
+    var lynks: [UserMKMapItem]? = []
 }
 
 // MARK: - Private Helpers
@@ -56,29 +68,36 @@ extension LoginViewController {
             self.messageLabel?.text = LoginViewController.DefaultMessage
         }
         
-        displayProfile()
+        Auth.auth().signInAnonymously() { (authResult, error) in
+            self.displayProfile(uid: (authResult?.user.uid)!)
+            self.loadLynks()
+        }
     }
     
-    fileprivate func displayProfile() {
+    fileprivate func displayProfile(uid: String) {
         let successBlock = { (response: [AnyHashable: Any]?) in
             guard let response = response as? [String: Any],
                 let data = response["data"] as? [String: Any],
                 let me = data["me"] as? [String: Any],
                 let displayName = me["displayName"] as? String,
                 let bitmoji = me["bitmoji"] as? [String: Any],
+                let roomID = me["externalID"] as? String?,
                 let avatar = bitmoji["avatar"] as? String else {
                     return
             }
-            
-            Auth.auth().signInAnonymously() { (authResult, error) in
-                self.geoFireRef?.child((authResult?.user.uid)!).setValue(response)
-            }
-            
+
             // Needs to be on the main thread to control the UI.
             DispatchQueue.main.async {
-                self.loadAndDisplayAvatar(url: URL(string: avatar))
-                self.nameLabel?.text = displayName
+//                self.loadAndDisplayAvatar(url: URL(string: avatar))
+//                self.nameLabel?.text = displayName
+                self.geoFireRef?.child(uid).setValue(response)
+//                self.geoFireRef?.child(uid).setValue(["roomID": roomID])
             }
+            
+            self.loadLynks()
+            
+          
+            
         }
         
         let failureBlock = { (error: Error?, success: Bool) in
@@ -112,6 +131,41 @@ extension LoginViewController {
         
     }
     
+    fileprivate func loadLynks() {
+        myQuery = geoFire?.query(at: CLLocation(coordinate: self.locationManager.location!.coordinate, altitude: 0.5), withRadius: 10)
+        myQuery?.observe(.keyEntered, with: { (key, location) in
+            Database.database().reference().child("users").child(key).observe(.value, with: { (snapshot) in
+                let userDict = snapshot.value as? [String : AnyObject] ?? [:]
+                if let data = userDict["data"] {
+                    let me = data["me"] as! [String : AnyObject]
+                    
+                    if((self.userCache.object(forKey: key as NSString)) == nil && key != Auth.auth().currentUser?.uid) {
+                        let lynk = UserMKMapItem(coordinate: location.coordinate, profileFileURL: me["bitmoji"]?["avatar"] as! String, title: me["displayName"] as! String, roomID: me["externalId"] as! String)
+                        self.lynks?.append(lynk)
+                        self.userCache.setObject(lynk, forKey: key as NSString)
+                    }
+                } else {
+                    return
+                }
+                
+            })
+        })
+        
+        myQuery?.observeReady{
+//            self.selectLynk()
+        }
+    }
+    
+    func selectLynk() {
+        print("here")
+        if self.lynks!.count > 0 {
+            let lynk = lynks?.last
+            avatarView?.image = lynk?.profileImage
+            nameLabel?.text = lynk?.annotation?.title
+//            lynks?.removeLast()
+        }
+    }
+    
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == UIColor.lightGray {
             textView.text = ""
@@ -129,7 +183,7 @@ extension LoginViewController {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text == "" {
-            textView.text = "What is your best pick-up line?"
+//            textView.text = self.statusTextView.text
             textView.textColor = UIColor.lightGray
         }
     }
@@ -155,11 +209,12 @@ extension LoginViewController {
     }
     
     @IBAction func goOnlineButtonDidTap(_ sender: UIButton) {
+        
         if CLLocationManager.locationServicesEnabled() {
             // go to settings view controller
             let settingsVC = UIStoryboard(name: "Main", bundle: nil)
                 .instantiateViewController(withIdentifier: "SettingsViewController") as! SettingsViewController
-            settingsVC.statusText = statusTextView.text
+//            settingsVC.statusText = "room"
             self.navigationController?.pushViewController(settingsVC, animated: true)
         }
     }
@@ -180,17 +235,38 @@ extension LoginViewController {
         geoFireRef = Database.database().reference().child("users")
         geoFire = GeoFire(firebaseRef: geoFireRef!)
         
-        statusTextView.delegate = self
-        statusTextView.text = "What is your best pick-up line?"
-        statusTextView.textColor = UIColor.lightGray
-        statusTextView.layer.borderWidth = 1.0
-        statusTextView.layer.borderColor = UIColor.lightGray.cgColor
+        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        locationManager.distanceFilter = kCLDistanceFilterNone
+        locationManager.headingFilter = kCLHeadingFilterNone
+        locationManager.pausesLocationUpdatesAutomatically = false
+        locationManager.delegate = self
+        locationManager.startUpdatingHeading()
+        locationManager.startUpdatingLocation()
+        
+//        statusTextView.delegate = self
+//        statusTextView.text = LoginViewController.DefaultMessageStatus
+//        statusTextView.textColor = UIColor.lightGray
+//        statusTextView.layer.borderWidth = 1.0
+//        statusTextView.layer.borderColor = UIColor.lightGray.cgColor
         
         if SCSDKLoginClient.isUserLoggedIn {
+            locationManager.requestWhenInUseAuthorization()
             displayForLoginState()
         } else {
             displayForLogoutState()
         }
+    }
+}
+
+@available(iOS 11.0, *)
+extension LoginViewController: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last,
+            let userID = Auth.auth().currentUser?.uid
+            else { return }
+        self.geoFire?.setLocation(location, forKey: userID)
+        self.selectLynk()
     }
 }
 

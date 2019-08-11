@@ -49,7 +49,7 @@ extension LocationCell {
             return
         }
         
-        titleLabel.text = mapItem.titleText
+        titleLabel.text = "\n Code: \(mapItem.titleText!)"
         
         guard let currentLocation = currentLocation else {
             distanceLabel.text = "📡"

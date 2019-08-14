@@ -11,6 +11,7 @@ import MapKit
 import UIKit
 import GeoFire
 import Firebase
+import VerticalCardSwiper
 
 @available(iOS 11.0, *)
 class SettingsViewController: UIViewController {
@@ -30,6 +31,8 @@ class SettingsViewController: UIViewController {
     var geoFire: GeoFire?
     var myQuery: GFQuery?
     
+    private var cardSwiper: VerticalCardSwiper!
+    
     let userCache = NSCache<NSString, UserMKMapItem>()
 
     override func viewDidLoad() {
@@ -45,17 +48,26 @@ class SettingsViewController: UIViewController {
 
         locationManager.requestWhenInUseAuthorization()
         
-        geoFireRef = Database.database().reference().child("users")
+        geoFireRef = Database.database().reference().child("lynks")
         geoFire = GeoFire(firebaseRef: geoFireRef!)
         
-        self.searchResultTable.delegate = self
-        self.searchResultTable.dataSource = self
+//        self.searchResultTable.delegate = self
+//        self.searchResultTable.dataSource = self
         
-        searchResultTable.register(UINib(nibName: "LocationCell", bundle: nil), forCellReuseIdentifier: "LocationCell")
+//        searchResultTable.register(UINib(nibName: "LocationCell", bundle: nil), forCellReuseIdentifier: "LocationCell")
+//
+//        searchResultTable.rowHeight = UITableView.automaticDimension
+//        searchResultTable.estimatedRowHeight = 100
+//        searchResultTable.rowHeight = 100.0
         
-        searchResultTable.rowHeight = UITableView.automaticDimension
-        searchResultTable.estimatedRowHeight = 100
-        searchResultTable.rowHeight = 100.0
+        cardSwiper = VerticalCardSwiper(frame: self.view.bounds)
+        view.addSubview(cardSwiper)
+        
+        cardSwiper.datasource = self
+        cardSwiper.delegate = self
+        
+        // register cardcell for storyboard use
+        cardSwiper.register(nib: UINib(nibName: "LynkCell", bundle: nil), forCellWithReuseIdentifier: "LynkCell")
         
     }
 
@@ -70,7 +82,7 @@ class SettingsViewController: UIViewController {
     @IBAction
     func toggledSwitch(_ sender: UISwitch) {
        if sender == showRouteDirections {
-            searchResultTable.reloadData()
+//            searchResultTable.reloadData()
         }
     }
 }
@@ -96,25 +108,42 @@ extension SettingsViewController: UITextFieldDelegate {
 // MARK: - DataSource
 
 @available(iOS 11.0, *)
-extension SettingsViewController: UITableViewDataSource {
-
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+extension SettingsViewController: VerticalCardSwiperDatasource {
+    func numberOfCards(verticalCardSwiperView: VerticalCardSwiperView) -> Int {
+        return self.mapSearchResults?.count ?? 0
     }
+    
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return mapSearchResults?.count ?? 0
-    }
+//    func numberOfSections(in tableView: UITableView) -> Int {
+//        return 1
+//    }
+//
+//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        return mapSearchResults?.count ?? 0
+//    }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "LocationCell", for: indexPath)
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "LocationCell", for: indexPath)
+//        guard let mapSearchResults = mapSearchResults,
+//            indexPath.row < mapSearchResults.count,
+//            let locationCell = cell as? LocationCell else {
+//                return cell
+//        }
+//        locationCell.locationManager = locationManager
+//        locationCell.mapItem = mapSearchResults[indexPath.row]
+//
+//        return locationCell
+//    }
+    
+    func cardForItemAt(verticalCardSwiperView: VerticalCardSwiperView, cardForItemAt index: Int) -> CardCell {
+        let cell = verticalCardSwiperView.dequeueReusableCell(withReuseIdentifier: "LynkCell", for: index)
         guard let mapSearchResults = mapSearchResults,
-            indexPath.row < mapSearchResults.count,
-            let locationCell = cell as? LocationCell else {
-                return cell
+            index < mapSearchResults.count,
+            let locationCell = cell as? LynkCell else {
+                return cell as! CardCell
         }
         locationCell.locationManager = locationManager
-        locationCell.mapItem = mapSearchResults[indexPath.row]
+        locationCell.mapItem = mapSearchResults[index]
         
         return locationCell
     }
@@ -123,14 +152,60 @@ extension SettingsViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 
 @available(iOS 11.0, *)
-extension SettingsViewController: UITableViewDelegate {
+extension SettingsViewController: VerticalCardSwiperDelegate {
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let mapSearchResults = mapSearchResults, indexPath.row < mapSearchResults.count else {
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        guard let mapSearchResults = mapSearchResults, indexPath.row < mapSearchResults.count else {
+//            return
+//        }
+//        let selectedMapItem = mapSearchResults[indexPath.row]
+//        getDirections(to: selectedMapItem, roomID: selectedMapItem.roomID!)
+//    }
+    
+    func willSwipeCardAway(card: CardCell, index: Int, swipeDirection: SwipeDirection) {
+    
+        // called right before the card animates off the screen (optional).
+        self.mapSearchResults?.remove(at: index)
+    }
+    
+    func didSwipeCardAway(card: CardCell, index: Int, swipeDirection: SwipeDirection) {
+    
+        // handle swipe gestures (optional).
+    }
+    
+    func sizeForItem(verticalCardSwiperView: VerticalCardSwiperView, index: Int) -> CGSize {
+    
+        // Allows you to return custom card sizes (optional).
+        return CGSize(width: verticalCardSwiperView.frame.width, height: verticalCardSwiperView.frame.height)
+    }
+    
+    func didScroll(verticalCardSwiperView: VerticalCardSwiperView) {
+    
+        // Tells the delegate when the user scrolls through the cards (optional).
+    }
+    
+    func didEndScroll(verticalCardSwiperView: VerticalCardSwiperView) {
+    
+        // Tells the delegate when scrolling through the cards came to an end (optional).
+    }
+    
+    func didDragCard(card: CardCell, index: Int, swipeDirection: SwipeDirection) {
+    
+        // Called when the user starts dragging a card to the side (optional).
+    }
+    
+    func didTapCard(verticalCardSwiperView: VerticalCardSwiperView, index: Int) {
+    
+        guard let mapSearchResults = mapSearchResults, index < mapSearchResults.count else {
             return
         }
-        let selectedMapItem = mapSearchResults[indexPath.row]
+        let selectedMapItem = mapSearchResults[index]
         getDirections(to: selectedMapItem, roomID: selectedMapItem.roomID!)
+    }
+    
+    func didHoldCard(verticalCardSwiperView: VerticalCardSwiperView, index: Int, state: UIGestureRecognizer.State) {
+    
+        // Tells the delegate when the user holds a card (optional).
     }
 
 }
@@ -171,6 +246,7 @@ extension SettingsViewController {
     @IBAction func mapButtonTapped(_ sender: Any) {
         let mapVC = MapViewController.loadFromStoryboard()
         mapVC.mapSearchResults = mapSearchResults
+        mapVC.myLocation = locationManager.location
         self.navigationController?.pushViewController(mapVC, animated: true)
     }
 
@@ -228,13 +304,17 @@ extension SettingsViewController {
                 if let data = userDict["data"] {
                     let me = data["me"] as! [String : AnyObject]
                     
-                    if((self.userCache.object(forKey: key as NSString)) == nil && key != Auth.auth().currentUser?.uid) {
-                        let destination = UserMKMapItem(coordinate: location.coordinate, profileFileURL: me["bitmoji"]?["avatar"] as! String, title: me["externalId"]as! String, roomID: me["externalId"] as! String)
-                        self.mapSearchResults?.append(destination)
-                        DispatchQueue.main.async { [weak self] in
-                            self?.searchResultTable.reloadData()
-                        }
-                        self.userCache.setObject(destination, forKey: key as NSString)
+                    if((self.userCache.object(forKey: key as NSString)) == nil && key == Auth.auth().currentUser?.uid) {
+                        Database.database().reference().child("lynks").child(key).observe(.value, with: { (snapshot) in
+                            let lynkDict = snapshot.value as? [String : AnyObject] ?? [:]
+                            let destination = UserMKMapItem(coordinate: location.coordinate, profileFileURL: me["bitmoji"]?["avatar"] as! String, title: "Lynk Set"/**lynkDict["dateTime"] as! String*/, roomID: me["externalId"] as! String)
+                            self.mapSearchResults?.append(destination)
+                            DispatchQueue.main.async { [weak self] in
+                                self?.cardSwiper.reloadData()
+                            }
+                            self.userCache.setObject(destination, forKey: key as NSString)
+                        })
+                        
                     } else if(self.mapSearchResults!.count > 0) {
 //                        self.geoFireRef?.child(Auth.auth().currentUser!.uid).updateChildValues(["matched": self.mapSearchResults!.last?.roomID])
 //                        self.getDirections(to: self.mapSearchResults!.last!, roomID: me["externalId"] as! String)

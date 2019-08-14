@@ -22,7 +22,7 @@ open class UserMKMapItem: MKMapItem {
         
         var place: MKPlacemark!
         
-        self.titleText = roomID
+        self.titleText = title
         
         self.coordinate = coordinate
         

@@ -11,18 +11,22 @@ import CoreLocation
 import SCSDKLoginKit
 import GeoFire
 import Firebase
+import GooglePlacePicker
+import GoogleMaps
 
 class LoginViewController: UIViewController, UITextViewDelegate {
     // MARK: - Properties
     
     fileprivate static let DefaultMessage = """
-The world's first way to date in the future
+The world's first way to hangout in the future
 """
     
     
     fileprivate static let DefaultMessageStatus = """
-What is your share code?
+What we will do on the date is...
 """
+    
+    internal let kPlacesAPIKey = "AIzaSyCiKfvN9tKQdKYPi0fvUwcI2M8XYk3YYA0"
     
     @IBOutlet fileprivate weak var loginButton: UIButton?
     @IBOutlet fileprivate weak var messageLabel: UILabel?
@@ -34,6 +38,12 @@ What is your share code?
     @IBOutlet weak var lynkNameLabel: UILabel!
     @IBOutlet fileprivate weak var logoutButton: UINavigationItem?
     @IBOutlet weak var statusTextView: UITextView!
+    @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var nearbyButton: UIBarButtonItem!
+    
+    @IBOutlet weak var letsLynkButton: UIButton!
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var datePicker: UIDatePicker!
     
     let locationManager = CLLocationManager()
     
@@ -41,9 +51,44 @@ What is your share code?
     var geoFire: GeoFire?
     var myQuery: GFQuery?
     
+    var lynkDateTime: String?
+    var lynkSubmitted: Bool?
+    var lynkMapItem: MKMapItem?
+    
     let userCache = NSCache<NSString, UserMKMapItem>()
     
     var lynks: [UserMKMapItem]? = []
+    
+    @IBAction func nearbyButtonTapped(_ sender: Any) {
+        if CLLocationManager.locationServicesEnabled() {
+            // go to settings view controller
+            let settingsVC = UIStoryboard(name: "Main", bundle: nil)
+                .instantiateViewController(withIdentifier: "SettingsViewController") as! SettingsViewController
+            //            settingsVC.statusText = "room"
+            self.navigationController?.pushViewController(settingsVC, animated: true)
+        }
+    }
+    
+    func createARVC() -> POIViewController {
+        let arclVC = POIViewController.loadFromStoryboard()
+        arclVC.showMap = true
+        
+        return arclVC
+    }
+    
+    @objc func datePickerChanged(datePicker: UIDatePicker) {
+        
+        let dateFormatter = DateFormatter()
+        
+        dateFormatter.dateStyle = DateFormatter.Style.short
+        
+        dateFormatter.timeStyle = DateFormatter.Style.short
+        
+        let strDate = dateFormatter.string(from: datePicker.date)
+        
+        lynkDateTime = strDate
+        
+    }
 }
 
 // MARK: - Private Helpers
@@ -55,23 +100,49 @@ extension LoginViewController {
             self.logoutButton?.rightBarButtonItem?.isEnabled = false
             self.loginView?.isHidden = false
             self.profileView?.isHidden = true
+            self.nearbyButton.isEnabled = false
+            self.mapView.isHidden = true
             self.messageLabel?.text = LoginViewController.DefaultMessage
         }
     }
     
-    fileprivate func displayForLoginState() {
+    fileprivate func displayForLoginState(lynkSubmitted: Bool) {
         // Needs to be on the main thread to control the UI.
         DispatchQueue.main.async {
             self.logoutButton?.rightBarButtonItem?.isEnabled = true
             self.loginView?.isHidden = true
+            self.nearbyButton.isEnabled  = true
             self.profileView?.isHidden = false
+            self.mapView.isHidden = true
             self.messageLabel?.text = LoginViewController.DefaultMessage
+            
+            if(lynkSubmitted) {
+                self.datePicker.isHidden = true
+                if let dateTime = self.lynkDateTime {
+                    self.dateLabel.text = "Lynk Set For \(dateTime)"
+                }
+                self.letsLynkButton.isHidden = true
+                let annotation = UserPointAnnotation()
+                annotation.coordinate = self.lynkMapItem!.placemark.coordinate
+                self.mapView.isHidden = false
+                self.mapView.showAnnotations([annotation], animated: true)
+                
+                
+                print("lynk submitted")
+            }
+//            self.loadLynks()
         }
+        
+        
         
         Auth.auth().signInAnonymously() { (authResult, error) in
             self.displayProfile(uid: (authResult?.user.uid)!)
-            self.loadLynks()
+            //            self.selectLynk()
         }
+        
+        
+        
+       
     }
     
     fileprivate func displayProfile(uid: String) {
@@ -88,16 +159,12 @@ extension LoginViewController {
 
             // Needs to be on the main thread to control the UI.
             DispatchQueue.main.async {
-//                self.loadAndDisplayAvatar(url: URL(string: avatar))
-//                self.nameLabel?.text = displayName
+                self.loadAndDisplayAvatar(url: URL(string: avatar))
+                self.nameLabel?.text = displayName
                 self.geoFireRef?.child(uid).setValue(response)
 //                self.geoFireRef?.child(uid).setValue(["roomID": roomID])
             }
-            
-            self.loadLynks()
-            
-          
-            
+//            self.loadLynks()
         }
         
         let failureBlock = { (error: Error?, success: Bool) in
@@ -143,6 +210,8 @@ extension LoginViewController {
                         let lynk = UserMKMapItem(coordinate: location.coordinate, profileFileURL: me["bitmoji"]?["avatar"] as! String, title: me["displayName"] as! String, roomID: me["externalId"] as! String)
                         self.lynks?.append(lynk)
                         self.userCache.setObject(lynk, forKey: key as NSString)
+                    } else if(key != Auth.auth().currentUser?.uid) {
+//                        self.selectLynk()
                     }
                 } else {
                     return
@@ -162,8 +231,59 @@ extension LoginViewController {
             let lynk = lynks?.last
             avatarView?.image = lynk?.profileImage
             nameLabel?.text = lynk?.annotation?.title
+//            mapView.addAnnotation(lynk!.annotation!)
+            
+//            let region = MKCoordinateRegion(
+//                center: lynk!.annotation!.coordinate, latitudinalMeters: 200, longitudinalMeters: 200)
+//            mapView.setRegion(region, animated: true)
+//
+//            let myAnnoation = MKPointAnnotation()
+//            myAnnoation.coordinate = myLocation.coordinate
+//            mapView.addAnnotation(myAnnoation)
+//            mapView.setCenter(myLocation.coordinate, animated: true)
 //            lynks?.removeLast()
         }
+    }
+    
+    func getDirections(to mapLocation: UserMKMapItem, roomID: String) {
+//        refreshControl.startAnimating()
+        
+        let request = MKDirections.Request()
+        request.source = MKMapItem.forCurrentLocation()
+        request.destination = mapLocation
+        request.requestsAlternateRoutes = false
+        
+        let directions = MKDirections(request: request)
+        
+        directions.calculate(completionHandler: { response, error in
+            defer {
+                DispatchQueue.main.async { [weak self] in
+//                    self?.refreshControl.stopAnimating()
+                }
+            }
+            if let error = error {
+                return print("Error getting directions: \(error.localizedDescription)")
+            }
+            guard let response = response else {
+                return assertionFailure("No error, but no response, either.")
+            }
+            
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                
+                let arclVC = self.createARVC()
+                arclVC.routes = response.routes
+                arclVC.targetUser = mapLocation
+                arclVC.targetUser?.annotation = mapLocation.annotation
+                
+                //                let cameraVC = self.createCameraVC()
+                //                cameraVC.roomID = roomID
+                
+                self.navigationController?.pushViewController(arclVC, animated: true)
+            }
+        })
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
@@ -183,7 +303,7 @@ extension LoginViewController {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text == "" {
-//            textView.text = self.statusTextView.text
+            textView.text = "" //self.statusTextView.text
             textView.textColor = UIColor.lightGray
         }
     }
@@ -197,7 +317,7 @@ extension LoginViewController {
         SCSDKLoginClient.login(from: self.navigationController!) { (success: Bool, error: Error?) in
             if success {
                 // Needs to be on the main thread to control the UI.
-                self.displayForLoginState()
+                self.displayForLoginState(lynkSubmitted: false)
             }
             if let error = error {
                 // Needs to be on the main thread to control the UI.
@@ -208,15 +328,33 @@ extension LoginViewController {
         }
     }
     
-    @IBAction func goOnlineButtonDidTap(_ sender: UIButton) {
+    @IBAction func nearbyButtonDidTap(_ sender: UIButton) {
         
         if CLLocationManager.locationServicesEnabled() {
             // go to settings view controller
             let settingsVC = UIStoryboard(name: "Main", bundle: nil)
                 .instantiateViewController(withIdentifier: "SettingsViewController") as! SettingsViewController
-//            settingsVC.statusText = "room"
+            //            settingsVC.statusText = "room"
+//            settingsVC.currentLocation = self.locationManager.location
             self.navigationController?.pushViewController(settingsVC, animated: true)
         }
+    }
+    
+    @IBAction func goOnlineButtonDidTap(_ sender: UIButton) {
+        
+        if CLLocationManager.locationServicesEnabled() {
+            // go to settings view controller
+            let settingsVC = UIStoryboard(name: "Main", bundle: nil)
+                .instantiateViewController(withIdentifier: "SearchResultTableViewController") as! SearchResultTableViewController
+            settingsVC.lynkDateTime = self.lynkDateTime
+            settingsVC.currentLocation = self.locationManager.location
+            self.navigationController?.pushViewController(settingsVC, animated: true)
+//            getDirections(to: lynks!.first!, roomID: "room")
+        }
+//        let config = GMSPlacePickerConfig(viewport: nil)
+//        let placePicker = GMSPlacePickerViewController(config: config)
+//
+//        present(placePicker, animated: true, completion: nil)
     }
     
     @IBAction func logoutButtonDidTap(_ sender: UIBarButtonItem) {
@@ -232,8 +370,13 @@ extension LoginViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        geoFireRef = Database.database().reference().child("users")
-        geoFire = GeoFire(firebaseRef: geoFireRef!)
+        datePicker.addTarget(self, action: #selector(datePickerChanged), for: UIControl.Event.valueChanged)
+        
+//        GMSPlacesClient.provideAPIKey(kPlacesAPIKey)
+//        GMSServices.provideAPIKey(kPlacesAPIKey)
+        
+//        geoFireRef = Database.database().reference().child("users")
+//        geoFire = GeoFire(firebaseRef: geoFireRef!)
         
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager.distanceFilter = kCLDistanceFilterNone
@@ -251,11 +394,12 @@ extension LoginViewController {
         
         if SCSDKLoginClient.isUserLoggedIn {
             locationManager.requestWhenInUseAuthorization()
-            displayForLoginState()
+            displayForLoginState(lynkSubmitted: lynkSubmitted ?? false)
         } else {
             displayForLogoutState()
         }
     }
+
 }
 
 @available(iOS 11.0, *)
@@ -266,7 +410,6 @@ extension LoginViewController: CLLocationManagerDelegate {
             let userID = Auth.auth().currentUser?.uid
             else { return }
         self.geoFire?.setLocation(location, forKey: userID)
-        self.selectLynk()
     }
 }
 

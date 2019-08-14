@@ -10,6 +10,8 @@ target 'ARKit+CoreLocation' do
     pod 'SnapSDK', '> 1.3' 
     pod 'TwilioVideo'    
     pod 'Alamofire'
+    pod 'VerticalCardSwiper'
+    pod 'GooglePlacePicker'
     target 'ARCLTests' do
   
     end

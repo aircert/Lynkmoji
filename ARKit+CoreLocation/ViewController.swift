@@ -136,29 +136,29 @@ class ViewController: UIViewController {
         // Configure access token either from server or manually.
         // If the default wasn't changed, try fetching from server.
         if (accessToken == "TWILIO_ACCESS_TOKEN") {
-            do {
-                Alamofire.request("\(tokenUrl)/", parameters: ["room": self.roomTextField.text!, "User": (Auth.auth().currentUser?.uid)!]).responseJSON { response in
+            
+            Alamofire.request("\(tokenUrl)/", parameters: ["room": self.roomTextField.text!, "User": (Auth.auth().currentUser?.uid)!]).responseJSON { response in
+                do {
                     print("Request: \(String(describing: response.request))")   // original url request
                     print("Response: \(String(describing: response.response))") // http url response
                     print("Result: \(response.result)")                         // response serialization result
-                    
-                    if let json = (response.result.value as! [String: AnyObject])["jwt"]   {
-                        print("JSON: \(json)") // serialized json response
-                        self.accessToken = json as! String
-                        self.doThisInstead()
-                    }
-                    
-                    if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                        print("Data: \(utf8Text)") // original server data as UTF8 string
+                    if(response.result.value != nil) {
+                        if let json = (response.result.value as! [String: AnyObject])["jwt"]   {
+                            print("JSON: \(json)") // serialized json response
+                            self.accessToken = json as! String
+                            self.doThisInstead()
+                        }
                         
+                        if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                            print("Data: \(utf8Text)") // original server data as UTF8 string
+                            
+                        }
                     }
-                    
+                } catch {
+                    let message = "Failed to fetch access token"
+                    self.logMessage(messageText: message)
+                    return
                 }
-                
-            } catch {
-                let message = "Failed to fetch access token"
-                logMessage(messageText: message)
-                return
             }
         }
     }

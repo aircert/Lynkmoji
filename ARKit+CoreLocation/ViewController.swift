@@ -20,7 +20,7 @@ class ViewController: UIViewController {
     var accessToken = "TWILIO_ACCESS_TOKEN"
     
     // Configure remote URL to fetch token from
-    var tokenUrl = "https://27e48240.ngrok.io"
+    var tokenUrl = "https://enigmatic-mesa-91094.herokuapp.com/"
     
     // Video SDK components
     var room: TVIRoom?

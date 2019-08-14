@@ -27,8 +27,11 @@ class SettingsViewController: UIViewController {
     
     var statusText: String?
 
-    var geoFireRef: DatabaseReference?
-    var geoFire: GeoFire?
+    var userGeoFireRef: DatabaseReference?
+    var userGeoFire: GeoFire?
+    
+    var lynkGeoFireRef: DatabaseReference?
+    var lynkGeoFire: GeoFire?
     var myQuery: GFQuery?
     
     private var cardSwiper: VerticalCardSwiper!
@@ -47,9 +50,12 @@ class SettingsViewController: UIViewController {
         locationManager.startUpdatingLocation()
 
         locationManager.requestWhenInUseAuthorization()
+    
+        lynkGeoFireRef = Database.database().reference().child("lynks")
+        lynkGeoFire = GeoFire(firebaseRef: lynkGeoFireRef!)
         
-        geoFireRef = Database.database().reference().child("lynks")
-        geoFire = GeoFire(firebaseRef: geoFireRef!)
+        userGeoFireRef = Database.database().reference().child("users")
+        userGeoFire = GeoFire(firebaseRef: userGeoFireRef!)
         
 //        self.searchResultTable.delegate = self
 //        self.searchResultTable.dataSource = self
@@ -219,7 +225,7 @@ extension SettingsViewController: CLLocationManagerDelegate {
         guard let location = locations.last,
             let userID = Auth.auth().currentUser?.uid
             else { return }
-        self.geoFire?.setLocation(location, forKey: userID)
+        self.userGeoFire?.setLocation(location, forKey: userID)
         self.searchForUsers(location: location)
     }
 }
@@ -296,7 +302,7 @@ extension SettingsViewController {
 //        toggledSwitch(showRouteDirections)
         
 //        refreshControl.startAnimating()
-        myQuery = geoFire?.query(at: CLLocation(coordinate: location.coordinate, altitude: 0.5), withRadius: 10)
+        myQuery = lynkGeoFire?.query(at: CLLocation(coordinate: location.coordinate, altitude: 0.5), withRadius: 10)
         
         myQuery?.observe(.keyEntered, with: { (key, location) in
             Database.database().reference().child("users").child(key).observe(.value, with: { (snapshot) in
@@ -307,7 +313,7 @@ extension SettingsViewController {
                     if((self.userCache.object(forKey: key as NSString)) == nil && key == Auth.auth().currentUser?.uid) {
                         Database.database().reference().child("lynks").child(key).observe(.value, with: { (snapshot) in
                             let lynkDict = snapshot.value as? [String : AnyObject] ?? [:]
-                            let destination = UserMKMapItem(coordinate: location.coordinate, profileFileURL: me["bitmoji"]?["avatar"] as! String, title: "Lynk Set"/**lynkDict["dateTime"] as! String*/, roomID: me["externalId"] as! String)
+                            let destination = UserMKMapItem(coordinate: location.coordinate, profileFileURL: me["bitmoji"]?["avatar"] as! String, title: lynkDict["dateTime"] as! String, roomID: me["externalId"] as! String)
                             self.mapSearchResults?.append(destination)
                             DispatchQueue.main.async { [weak self] in
                                 self?.cardSwiper.reloadData()

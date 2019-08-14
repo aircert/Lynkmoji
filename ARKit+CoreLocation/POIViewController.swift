@@ -164,8 +164,6 @@ extension POIViewController: MKMapViewDelegate {
        
 //            let pointAnnotation = annotation else { return }
         
-       
-        
         if (annotation is MKUserLocation) {
             return nil
         } else {
@@ -178,7 +176,9 @@ extension POIViewController: MKMapViewDelegate {
                 print("default")
                 marker.displayPriority = .required
                 marker.markerTintColor = UIColor(hue: 0.267, saturation: 0.67, brightness: 0.77, alpha: 1.0)
-                marker.glyphImage = nil
+                marker.glyphText = ""
+                marker.glyphTintColor = UIColor.clear
+                marker.markerTintColor = UIColor.clear
                 marker.image = targetUser?.annotation?.pinUserImage
             }
             

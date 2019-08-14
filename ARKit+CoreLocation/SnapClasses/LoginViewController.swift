@@ -76,6 +76,8 @@ What we will do on the date is...
         return arclVC
     }
     
+    
+    // BUG: If value does not change then it does not set datetime
     @objc func datePickerChanged(datePicker: UIDatePicker) {
         
         let dateFormatter = DateFormatter()
@@ -126,7 +128,6 @@ extension LoginViewController {
                 annotation.coordinate = self.lynkMapItem!.placemark.coordinate
                 self.mapView.isHidden = false
                 self.mapView.showAnnotations([annotation], animated: true)
-                
                 
                 print("lynk submitted")
             }

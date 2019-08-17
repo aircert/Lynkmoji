@@ -207,8 +207,8 @@ extension SearchResultTableViewController {
             print("selected")
             let uid = Auth.auth().currentUser?.uid
             let key = self.geoFireRef?.childByAutoId().key
-            self.geoFire?.setLocation((self.places?.first?.placemark.location)!, forKey: key!)
-            self.geoFireRef?.child(key!).updateChildValues(["uid": uid!, "dateTime": self.lynkDateTime]) { (error, ref) -> Void in
+            self.geoFire?.setLocation((self.places?.first?.placemark.location)!, forKey: uid!)
+            self.geoFireRef?.child(uid!).updateChildValues(["roomId": uid!, "uid": uid!, "dateTime": self.lynkDateTime, "location": self.places?.first?.name!]) { (error, ref) -> Void in
                 let loginVC = UIStoryboard(name: "Main", bundle: nil)
                     .instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
                 loginVC.lynkSubmitted = true

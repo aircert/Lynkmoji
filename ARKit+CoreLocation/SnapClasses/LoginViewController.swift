@@ -45,6 +45,7 @@ What we will do on the date is...
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var datePicker: UIDatePicker!
     
+    @IBOutlet weak var searchResultsView: UIView!
     let locationManager = CLLocationManager()
     
     var geoFireRef: DatabaseReference?
@@ -62,10 +63,9 @@ What we will do on the date is...
     @IBAction func nearbyButtonTapped(_ sender: Any) {
         if CLLocationManager.locationServicesEnabled() {
             // go to settings view controller
-            let settingsVC = UIStoryboard(name: "Main", bundle: nil)
-                .instantiateViewController(withIdentifier: "SettingsViewController") as! SettingsViewController
-            //            settingsVC.statusText = "room"
-            self.navigationController?.pushViewController(settingsVC, animated: true)
+            let mapVC = MapViewController.loadFromStoryboard()
+            mapVC.myLocation = locationManager.location
+            self.navigationController?.pushViewController(mapVC, animated: true)
         }
     }
     
@@ -115,20 +115,24 @@ extension LoginViewController {
             self.loginView?.isHidden = true
             self.nearbyButton.isEnabled  = true
             self.profileView?.isHidden = false
+            self.dateLabel.isHidden = true
             self.mapView.isHidden = true
+//            self.statusTextView.isHidden = false
             self.messageLabel?.text = LoginViewController.DefaultMessage
             
             if(lynkSubmitted) {
                 self.datePicker.isHidden = true
+                 self.dateLabel.isHidden = false
                 if let dateTime = self.lynkDateTime {
-                    self.dateLabel.text = "Lynk Set For \(dateTime)"
+                    self.dateLabel.text = "\(self.lynkMapItem?.name!) \(dateTime)"
                 }
                 self.letsLynkButton.isHidden = true
                 let annotation = UserPointAnnotation()
                 annotation.coordinate = self.lynkMapItem!.placemark.coordinate
+                annotation.title = self.lynkMapItem?.name
                 self.mapView.isHidden = false
                 self.mapView.showAnnotations([annotation], animated: true)
-                
+//                self.statusTextView.isHidden = true
                 print("lynk submitted")
             }
 //            self.loadLynks()
@@ -304,7 +308,7 @@ extension LoginViewController {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text == "" {
-            textView.text = "" //self.statusTextView.text
+            textView.text = ""//self.statusTextView.text
             textView.textColor = UIColor.lightGray
         }
     }
@@ -333,11 +337,16 @@ extension LoginViewController {
         
         if CLLocationManager.locationServicesEnabled() {
             // go to settings view controller
-            let settingsVC = UIStoryboard(name: "Main", bundle: nil)
-                .instantiateViewController(withIdentifier: "SettingsViewController") as! SettingsViewController
-            //            settingsVC.statusText = "room"
-//            settingsVC.currentLocation = self.locationManager.location
-            self.navigationController?.pushViewController(settingsVC, animated: true)
+            let mapVC = MapViewController.loadFromStoryboard()
+            mapVC.myLocation = locationManager.location
+            self.navigationController?.pushViewController(mapVC, animated: true)
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "SearchResultTableViewSegue" {
+            let dvc = segue.destination as! SearchResultTableViewController
+            dvc.currentLocation = self.locationManager.location
         }
     }
     
@@ -349,6 +358,7 @@ extension LoginViewController {
                 .instantiateViewController(withIdentifier: "SearchResultTableViewController") as! SearchResultTableViewController
             settingsVC.lynkDateTime = self.lynkDateTime
             settingsVC.currentLocation = self.locationManager.location
+            
             self.navigationController?.pushViewController(settingsVC, animated: true)
 //            getDirections(to: lynks!.first!, roomID: "room")
         }
@@ -388,7 +398,7 @@ extension LoginViewController {
         locationManager.startUpdatingLocation()
         
 //        statusTextView.delegate = self
-//        statusTextView.text = LoginViewController.DefaultMessageStatus
+////        statusTextView.text = LoginViewController.DefaultMessageStatus
 //        statusTextView.textColor = UIColor.lightGray
 //        statusTextView.layer.borderWidth = 1.0
 //        statusTextView.layer.borderColor = UIColor.lightGray.cgColor
@@ -410,7 +420,7 @@ extension LoginViewController: CLLocationManagerDelegate {
         guard let location = locations.last,
             let userID = Auth.auth().currentUser?.uid
             else { return }
-        self.geoFire?.setLocation(location, forKey: userID)
+//        self.geoFire?.setLocation(location, forKey: userID)
     }
 }
 

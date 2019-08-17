@@ -12,6 +12,12 @@ target 'ARKit+CoreLocation' do
     pod 'Alamofire'
     pod 'VerticalCardSwiper'
     pod 'GooglePlacePicker'
+    
+   # Add the Firebase pod for Google Analytics
+    pod 'Firebase/Analytics'
+
+    # Add the pod for Firebase Cloud Messaging
+    pod 'Firebase/Messaging'
     target 'ARCLTests' do
   
     end

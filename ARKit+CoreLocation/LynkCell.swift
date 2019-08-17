@@ -11,7 +11,7 @@ import MapKit
 import UIKit
 import VerticalCardSwiper
 
-class LynkCell: CardCell {
+class LynkCell: UITableViewCell {
 
     var locationManager: CLLocationManager?
     var locationUpdateTimer: Timer?
@@ -65,9 +65,13 @@ extension LynkCell {
             return
         }
 
-//        distanceLabel.text = String(format: "%.0f ft", mapItemLocation.distance(from: currentLocation)*3.28084)
+       
+        
+//        distanceLabel.text = String(format: "%.0f ft",  CLLocation(coordinate: mapItem.annotation!.coordinate, altitude: 0.5).distance(from: currentLocation)*3.28084)
         
         locationUpdateTimer = Timer(timeInterval: 1, target: self, selector: #selector(updateCell), userInfo: nil, repeats: false)
+        
+//        mapItem.annotation?.pinUserImage = mapItem.profileImage
         
         mapView.addAnnotation(mapItem.annotation!)
         

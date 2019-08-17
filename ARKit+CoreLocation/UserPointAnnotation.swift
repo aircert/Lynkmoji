@@ -11,4 +11,5 @@ import MapKit
 
 class UserPointAnnotation: MKPointAnnotation {
     var pinUserImage: UIImage!
+    var roomID: String?
 }

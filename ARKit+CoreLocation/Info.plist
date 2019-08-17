@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>${PRODUCT_NAME} shares your voice with other Participants connected to a Room.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -61,6 +59,8 @@
 	<string>This application will use the camera for Augmented Reality.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This application will use location for Augmented Reality.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>${PRODUCT_NAME} shares your voice with other Participants connected to a Room.</string>
 	<key>SCSDKClientId</key>
 	<string>95362f87-cc28-4c3d-83e2-a51a27809a43</string>
 	<key>SCSDKRedirectUrl</key>
@@ -70,6 +70,12 @@
 		<string>https://auth.snapchat.com/oauth2/api/user.display_name</string>
 		<string>https://auth.snapchat.com/oauth2/api/user.external_id</string>
 		<string>https://auth.snapchat.com/oauth2/api/user.bitmoji.avatar</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>location</string>
+		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

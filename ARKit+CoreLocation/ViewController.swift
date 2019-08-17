@@ -20,7 +20,7 @@ class ViewController: UIViewController {
     var accessToken = "TWILIO_ACCESS_TOKEN"
     
     // Configure remote URL to fetch token from
-    var tokenUrl = "https://enigmatic-mesa-91094.herokuapp.com/"
+    var tokenUrl = "https://stoic-hoover-1a313c.netlify.com/.netlify/functions/server"
     
     // Video SDK components
     var room: TVIRoom?
@@ -78,9 +78,9 @@ class ViewController: UIViewController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(ViewController.dismissKeyboard))
         self.view.addGestureRecognizer(tap)
         
-//        if(autoConnect!) {
-//            self.autoConnectCamera()
-//        }
+        if(autoConnect!) {
+            self.autoConnectCamera()
+        }
         
     }
     
@@ -137,22 +137,22 @@ class ViewController: UIViewController {
         // If the default wasn't changed, try fetching from server.
         if (accessToken == "TWILIO_ACCESS_TOKEN") {
             
-            Alamofire.request("\(tokenUrl)/", parameters: ["room": self.roomTextField.text!, "User": (Auth.auth().currentUser?.uid)!]).responseJSON { response in
+            Alamofire.request(tokenUrl, parameters: ["room": self.roomID!, "User": (Auth.auth().currentUser?.uid)!], encoding: JSONEncoding.default, headers: nil).responseString { response in
                 do {
-                    print("Request: \(String(describing: response.request))")   // original url request
-                    print("Response: \(String(describing: response.response))") // http url response
-                    print("Result: \(response.result)")                         // response serialization result
+//                    print("Request: \(String(describing: response.request))")   // original url request
+//                    print("Response: \(String(describing: response.response))") // http url response
+//                    print("Response: \(String(describing: response))")
+//                    print(response.result.value!)
+//                    print("Result: \(response.result)")                         // response serialization result
                     if(response.result.value != nil) {
-                        if let json = (response.result.value as! [String: AnyObject])["jwt"]   {
-                            print("JSON: \(json)") // serialized json response
-                            self.accessToken = json as! String
-                            self.doThisInstead()
-                        }
-                        
-                        if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                            print("Data: \(utf8Text)") // original server data as UTF8 string
-                            
-                        }
+                       
+//                        print("JSON: \(response.result.value! )") // serialized json response
+                        self.accessToken = (response.result.value!)
+                        self.doThisInstead()
+//                        if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+//                            print("Data: \(utf8Text)") // original server data as UTF8 string
+//
+//                        }
                     }
                 } catch {
                     let message = "Failed to fetch access token"
@@ -196,16 +196,40 @@ class ViewController: UIViewController {
             
             // The name of the Room where the Client will attempt to connect to. Please note that if you pass an empty
             // Room `name`, the Client will create one for you. You can get the name or sid from any connected Room.
-            builder.roomName = self.roomTextField.text!
+            builder.roomName = self.roomID
         }
         
         // Connect to the Room using the options we provided.
         room = TwilioVideo.connect(with: connectOptions, delegate: self)
         
-        logMessage(messageText: "Attempting to connect to room \(String(describing: self.roomTextField.text!))")
+        logMessage(messageText: "Attempting to connect to room \(String(describing: self.roomID))")
         
         self.showRoomUI(inRoom: true)
         self.dismissKeyboard()
+        self.sendNotification()
+    }
+    
+    func sendNotification() {
+        // 1
+        let content = UNMutableNotificationContent()
+        content.title = "Notification Tutorial"
+        content.subtitle = "from ioscreator.com"
+        content.body = " Notification triggered"
+        
+        // 2
+        let imageName = "applelogo"
+        guard let imageURL = Bundle.main.url(forResource: imageName, withExtension: "png") else { return }
+        
+        let attachment = try! UNNotificationAttachment(identifier: imageName, url: imageURL, options: .none)
+        
+        content.attachments = [attachment]
+        
+        // 3
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
+        let request = UNNotificationRequest(identifier: "notification.id.01", content: content, trigger: trigger)
+        
+        // 4
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
     }
     
     @IBAction func disconnect(sender: AnyObject) {

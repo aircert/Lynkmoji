@@ -55,6 +55,13 @@ class POIViewController: UIViewController {
             .instantiateViewController(withIdentifier: "ARCLViewController") as! POIViewController
         // swiftlint:disable:previous force_cast
     }
+    
+    func createCameraVC(roomID: String) -> ViewController {
+        let cameraVC = ViewController.loadFromStoryboard()
+        cameraVC.autoConnect = true
+        cameraVC.roomID = roomID
+        return cameraVC
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -98,6 +105,9 @@ class POIViewController: UIViewController {
 
             routes?.forEach { mapView.addOverlay($0.polyline) }
         }
+        
+        let cameraVC = self.createCameraVC(roomID: self.targetAnnotation!.roomID ?? "room")
+        contentView.addSubview(cameraVC.view)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -170,7 +180,7 @@ extension POIViewController: MKMapViewDelegate {
             let marker = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
             if annotation.title == self.targetAnnotation?.title {
                 marker.displayPriority = .required
-                marker.glyphImage = targetUser?.annotation?.pinUserImage
+                marker.glyphImage = self.targetAnnotation!.pinUserImage
                 return nil
             } else {
                 print("default")
@@ -179,7 +189,7 @@ extension POIViewController: MKMapViewDelegate {
                 marker.glyphText = ""
                 marker.glyphTintColor = UIColor.clear
                 marker.markerTintColor = UIColor.clear
-                marker.image = targetUser?.annotation?.pinUserImage
+                marker.image = self.targetAnnotation!.pinUserImage
             }
             
             return marker
@@ -250,7 +260,7 @@ extension POIViewController {
             if self.userAnnotation == nil {
                 self.userAnnotation = MKPointAnnotation()
                 self.mapView.addAnnotation(self.userAnnotation!)
-                self.mapView.addAnnotation(self.targetUser!.annotation!)
+                self.mapView.addAnnotation(self.targetAnnotation!)
                 UIView.animate(withDuration: 0.5, delay: 0, options: .allowUserInteraction, animations: {
                     self.userAnnotation?.coordinate = currentLocation.coordinate
                 }, completion: nil)
